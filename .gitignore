@@ -22,3 +22,18 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Replit workspace internals — never commit these
+pnpm-lock.yaml
+pnpm-workspace.yaml
+.replit
+.replitignore
+.prewarm
+.lovable/
+.agents/
+.local/
+.cache/
+artifacts/
+lib/
+scripts/
+*.tsbuildinfo
