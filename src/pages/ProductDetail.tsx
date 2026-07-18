@@ -111,7 +111,7 @@ const ProductDetail = () => {
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="grid gap-8 lg:grid-cols-2 lg:gap-12">
          {/* Image */}
-<div className="overflow-hidden rounded-2xl border border-border/40 bg-muted/10">
+<div className="aspect-square overflow-hidden rounded-2xl border border-border/40 bg-muted/10">
   {product.image ? (
     <img
       src={product.image}
@@ -123,7 +123,7 @@ const ProductDetail = () => {
       }}
     />
   ) : (
-    <div className="flex aspect-square items-center justify-center text-9xl">
+    <div className="flex h-full w-full items-center justify-center text-9xl">
       {categoryEmoji[product.category] || "✨"}
     </div>
   )}
@@ -134,7 +134,7 @@ const ProductDetail = () => {
             <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
               {product.category.replace('-', ' ')}
             </p>
-            <h1 className="mb-3 font-display text-3xl font-semibold text-foreground lg:text-4xl">{product.name}</h1>
+            <h1 className="mb-3 font-display text-2xl font-semibold text-foreground sm:text-3xl lg:text-4xl">{product.name}</h1>
 
             <div className="mb-4 flex items-center gap-2">
               <div className="flex items-center gap-0.5">
@@ -145,11 +145,11 @@ const ProductDetail = () => {
               <span className="text-sm text-muted-foreground">{product.rating} · {product.reviewCount} reviews</span>
             </div>
 
-            <div className="mb-6 flex items-baseline gap-3">
-              <span className="text-3xl font-bold text-foreground">₹{product.price}</span>
+            <div className="mb-6 flex flex-wrap items-baseline gap-2 sm:gap-3">
+              <span className="text-2xl font-bold text-foreground sm:text-3xl">₹{product.price}</span>
               {product.originalPrice && (
                 <>
-                  <span className="text-lg text-muted-foreground line-through">₹{product.originalPrice}</span>
+                  <span className="text-base text-muted-foreground line-through sm:text-lg">₹{product.originalPrice}</span>
                   <Badge className="bg-secondary/10 text-secondary text-xs font-semibold">{discountPercent}% OFF</Badge>
                 </>
               )}
@@ -174,7 +174,7 @@ const ProductDetail = () => {
 
             <div ref={ctaRef}>
               {/* Quantity + CTA */}
-              <div className="mb-4 flex items-center gap-3">
+              <div className="mb-4 flex flex-wrap items-center gap-3">
                 <div className="flex items-center rounded-lg border border-border/50">
                   <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => setQty(Math.max(1, qty - 1))}>
                     <Minus className="h-4 w-4" />
@@ -184,13 +184,13 @@ const ProductDetail = () => {
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>
-                <Button className="flex-1 gradient-cosmic py-6 text-primary-foreground shadow-lg text-base" onClick={handleAddToCart}>
-                  <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
-                </Button>
-                <Button variant="outline" size="icon" className={`h-12 w-12 border-border/50 ${wishlisted ? 'text-cosmic-pink' : 'text-muted-foreground'}`} onClick={() => wishlisted ? removeFromWishlist(product.id) : addToWishlist(product)}>
+                <Button variant="outline" size="icon" className={`h-10 w-10 border-border/50 ${wishlisted ? 'text-cosmic-pink' : 'text-muted-foreground'}`} onClick={() => wishlisted ? removeFromWishlist(product.id) : addToWishlist(product)}>
                   <Heart className={`h-5 w-5 ${wishlisted ? 'fill-cosmic-pink' : ''}`} />
                 </Button>
                 <ShareButton title={product.name} url={window.location.href} />
+                <Button className="min-w-[140px] flex-1 gradient-cosmic py-3 sm:py-6 text-primary-foreground shadow-lg text-base" onClick={handleAddToCart}>
+                  <ShoppingCart className="mr-2 h-5 w-5" /> Add to Cart
+                </Button>
               </div>
               <Button
                 className="mb-2 w-full gradient-nebula py-5 text-foreground text-base shadow-lg hover:shadow-xl transition-all hover:scale-[1.01] active:scale-[0.99]"
