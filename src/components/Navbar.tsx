@@ -1,12 +1,12 @@
 import { Link, useLocation } from 'react-router-dom';
 import { ShoppingCart, Heart, Search, Menu, X, User, Shield, Home, Grid3X3, ChevronDown } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
-import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import CategoryMegaMenu from './CategoryMegaMenu';
+import SearchBar from './SearchBar';
 
 const Navbar = () => {
   const { totalItems, setIsCartOpen } = useCart();
@@ -15,7 +15,6 @@ const Navbar = () => {
   const [searchOpen, setSearchOpen] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const searchRef = useRef<HTMLInputElement>(null);
   const location = useLocation();
 
   useEffect(() => {
@@ -82,12 +81,22 @@ const Navbar = () => {
           <div className="flex items-center gap-1">
             <AnimatePresence>
               {searchOpen && (
-                <motion.div initial={{ width: 0, opacity: 0 }} animate={{ width: 200, opacity: 1 }} exit={{ width: 0, opacity: 0 }} className="overflow-hidden">
-                  <Input ref={searchRef} placeholder="Search products..." className="h-9 bg-muted/50 text-sm" autoFocus onBlur={() => setSearchOpen(false)} />
+                <motion.div
+                  initial={{ width: 0, opacity: 0 }}
+                  animate={{ width: 280, opacity: 1 }}
+                  exit={{ width: 0, opacity: 0 }}
+                  className="overflow-visible"
+                >
+                  <SearchBar
+                    placeholder="Search products…"
+                    inputClassName="h-9 bg-muted/50 text-sm"
+                    autoFocus
+                    onSelect={() => setSearchOpen(false)}
+                  />
                 </motion.div>
               )}
             </AnimatePresence>
-            <Button variant="ghost" size="icon" onClick={() => { setSearchOpen(!searchOpen); setTimeout(() => searchRef.current?.focus(), 100); }} className="h-9 w-9 text-muted-foreground hover:text-foreground">
+            <Button variant="ghost" size="icon" onClick={() => setSearchOpen(!searchOpen)} className="h-9 w-9 text-muted-foreground hover:text-foreground">
               <Search className="h-[18px] w-[18px]" />
             </Button>
             <Link to="/wishlist">

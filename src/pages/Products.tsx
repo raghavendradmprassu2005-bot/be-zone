@@ -3,10 +3,10 @@ import { useSearchParams } from 'react-router-dom';
 import { useProducts } from '@/hooks/useProducts';
 import { CATEGORIES, Category } from '@/lib/types';
 import ProductCard from '@/components/ProductCard';
+import SearchBar from '@/components/SearchBar';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Input } from '@/components/ui/input';
-import { Search, Loader2, SlidersHorizontal, X } from 'lucide-react';
+import { Loader2, SlidersHorizontal, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Slider } from '@/components/ui/slider';
 
@@ -25,7 +25,15 @@ const Products = () => {
   const filtered = useMemo(() => {
     let result = [...products];
     if (selectedCategory !== 'all') result = result.filter(p => p.category === selectedCategory);
-    if (search) result = result.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        p.description?.toLowerCase().includes(q) ||
+        p.category.toLowerCase().includes(q) ||
+        p.tags?.some(tag => tag.toLowerCase().includes(q))
+      );
+    }
     result = result.filter(p => p.price >= priceRange[0] && p.price <= priceRange[1]);
     switch (sortBy) {
       case 'price-low': result.sort((a, b) => a.price - b.price); break;
@@ -94,8 +102,13 @@ const Products = () => {
             {/* Mobile Controls */}
             <div className="mb-6 flex flex-col sm:flex-row items-center gap-3">
               <div className="relative w-full sm:flex-1 min-w-0">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input placeholder="Search products..." value={search} onChange={e => setSearch(e.target.value)} className="h-10 bg-muted/30 pl-10 text-sm w-full" />
+                <SearchBar
+                  value={search}
+                  onChange={setSearch}
+                  placeholder="Search by name, brand, category…"
+                  inputClassName="h-10 bg-muted/30 text-sm"
+                  className="w-full"
+                />
               </div>
               <div className="flex w-full sm:w-auto items-center gap-3">
                 <Select value={sortBy} onValueChange={setSortBy}>
