@@ -1,0 +1,174 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 30 25% 97%;
+    --foreground: 20 10% 12%;
+
+    --card: 30 20% 99%;
+    --card-foreground: 20 10% 12%;
+
+    --popover: 30 20% 99%;
+    --popover-foreground: 20 10% 12%;
+
+    --primary: 20 10% 12%;
+    --primary-foreground: 30 25% 97%;
+
+    --secondary: 38 60% 52%;
+    --secondary-foreground: 20 10% 12%;
+
+    --muted: 30 15% 93%;
+    --muted-foreground: 20 8% 46%;
+
+    --accent: 38 60% 52%;
+    --accent-foreground: 20 10% 12%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 30 12% 88%;
+    --input: 30 12% 88%;
+    --ring: 38 60% 52%;
+
+    --radius: 0.625rem;
+
+    --gold: 38 72% 50%;
+    --gold-foreground: 20 10% 12%;
+    --rose-gold: 10 50% 65%;
+    --nebula: 38 60% 52%;
+    --cosmic-pink: 350 60% 55%;
+    --success: 152 60% 40%;
+
+    --sidebar-background: 30 20% 99%;
+    --sidebar-foreground: 20 10% 12%;
+    --sidebar-primary: 20 10% 12%;
+    --sidebar-primary-foreground: 30 25% 97%;
+    --sidebar-accent: 30 15% 93%;
+    --sidebar-accent-foreground: 20 10% 12%;
+    --sidebar-border: 30 12% 88%;
+    --sidebar-ring: 38 60% 52%;
+
+    font-family: 'DM Sans', system-ui, sans-serif;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cormorant Garamond', serif;
+    letter-spacing: -0.01em;
+    font-weight: 500;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'Cormorant Garamond', serif;
+  }
+  .font-body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+  }
+  .text-glow {
+    background: linear-gradient(135deg, hsl(38 72% 50%), hsl(10 50% 65%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .text-glow-cyan {
+    background: linear-gradient(135deg, hsl(38 72% 50%), hsl(350 60% 55%));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .gradient-cosmic {
+    background: linear-gradient(135deg, hsl(20 10% 12%), hsl(20 10% 22%));
+  }
+  .gradient-nebula {
+    background: linear-gradient(135deg, hsl(38 72% 50%), hsl(10 50% 65%));
+  }
+  .gradient-warm {
+    background: linear-gradient(135deg, hsl(38 72% 50%), hsl(350 60% 55%));
+  }
+  .gradient-luxury {
+    background: linear-gradient(135deg, hsl(38 72% 50%), hsl(38 60% 40%));
+  }
+  .box-glow {
+    box-shadow: 0 0 30px hsl(38 72% 50% / 0.12);
+  }
+  .box-glow-cyan {
+    box-shadow: 0 0 20px hsl(38 72% 50% / 0.1);
+  }
+  .shadow-premium {
+    box-shadow: 0 1px 3px hsl(20 10% 12% / 0.04), 0 6px 24px hsl(20 10% 12% / 0.06);
+  }
+  .shadow-premium-lg {
+    box-shadow: 0 4px 12px hsl(20 10% 12% / 0.05), 0 16px 40px hsl(20 10% 12% / 0.08);
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+  min-height: 100%;
+}
+
+body {
+  min-height: 100%;
+  overflow-x: hidden;
+}
+
+img,
+picture,
+video,
+canvas,
+svg {
+  max-width: 100%;
+}
+
+.card-hover {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px hsl(20 10% 12% / 0.1);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 10px hsl(38 72% 50% / 0.15); }
+  50% { box-shadow: 0 0 25px hsl(38 72% 50% / 0.3); }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+@keyframes glow-fade {
+  0% { opacity: 0; filter: blur(8px); transform: translateY(10px); }
+  100% { opacity: 1; filter: blur(0); transform: translateY(0); }
+}
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent 33%, hsl(0 0% 100% / 0.4) 50%, transparent 67%);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+.animate-glow-fade {
+  animation: glow-fade 0.8s ease-out forwards;
+}
+
+.starfield {
+  background-color: hsl(30 15% 93%);
+}

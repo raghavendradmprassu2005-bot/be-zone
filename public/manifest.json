@@ -1,0 +1,28 @@
+{
+  "name": "Be-Zone",
+  "short_name": "Be-Zone",
+  "description": "Discover Your Perfect Style — Curated premium beauty, skincare, makeup & fashion at unbeatable prices.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#C4921A",
+  "background_color": "#FAF7F4",
+  "lang": "en",
+  "categories": ["shopping", "lifestyle", "beauty"],
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "prefer_related_applications": false
+}
