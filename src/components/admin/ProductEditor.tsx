@@ -6,8 +6,10 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Image, Layers, FileText, Plus } from 'lucide-react';
 import type { AdminProductForm } from '@/components/admin/types';
+import { CATEGORIES } from '@/lib/types';
 
 interface ProductEditorProps {
   form: AdminProductForm;
@@ -52,7 +54,21 @@ export function ProductEditor({ form, onSave, imageFiles, setImageFiles, gallery
               </div>
               <div>
                 <Label>Category</Label>
-                <Input value={form.category} onChange={(event) => setForm((prev) => ({ ...prev, category: event.target.value }))} />
+                <Select
+                  value={form.category}
+                  onValueChange={(value) => setForm((prev) => ({ ...prev, category: value }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CATEGORIES.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>
+                        {cat.icon} {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label>Tags</Label>
