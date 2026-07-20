@@ -9,7 +9,8 @@ import heroImage from '@/assets/hero-beauty.jpg';
 import categoryWomen from '@/assets/category-women.jpg';
 import categoryMen from '@/assets/category-men.jpg';
 import categoryKids from '@/assets/category-kids.jpg';
-import { useState, useEffect, useCallback } from 'react';
+import { useRef } from 'react';
+import TopProductCard from '@/components/TopProductCard';
 
 const trustSignals = [
   { icon: Truck, title: 'Free Shipping', desc: 'On orders above ₹499' },
@@ -34,18 +35,14 @@ const Index = () => {
   const { data: products = [], isLoading } = useProducts();
   const featured = products.filter(p => p.tags.includes('featured')).slice(0, 4);
   const hotDeals = products.filter(p => p.tags.includes('hot-deal'));
-  const [slideIndex, setSlideIndex] = useState(0);
-  const trending = products.slice(0, 8);
+  const topProducts = products.filter(p => p.tags.includes('top-product'));
   const bestsellers = products.filter(p => p.tags.includes('bestseller'));
 
-  const nextSlide = useCallback(() => {
-    if (trending.length > 0) setSlideIndex(i => (i + 1) % Math.ceil(trending.length / 2));
-  }, [trending.length]);
-
-  useEffect(() => {
-    const interval = setInterval(nextSlide, 4000);
-    return () => clearInterval(interval);
-  }, [nextSlide]);
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const scrollCarousel = (dir: 'prev' | 'next') => {
+    if (!carouselRef.current) return;
+    carouselRef.current.scrollBy({ left: dir === 'next' ? 276 : -276, behavior: 'smooth' });
+  };
 
   return (
     <div className="min-h-screen pb-16 md:pb-0">
@@ -182,39 +179,57 @@ const Index = () => {
         </section>
       )}
 
-      {/* Trending Products Slider */}
-      {trending.length > 0 && (
-        <section className="py-16 bg-muted/30">
+      {/* Top Products Carousel */}
+      {topProducts.length > 0 && (
+        <section className="py-16 bg-muted/30 overflow-hidden">
           <div className="container mx-auto px-4">
-            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-10 flex items-end justify-between">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mb-10 flex items-end justify-between"
+            >
               <div>
-                <span className="mb-2 inline-block text-xs font-semibold uppercase tracking-widest text-secondary">✦ Trending Now</span>
+                <span className="mb-2 inline-block text-xs font-semibold uppercase tracking-widest text-secondary">⭐ Trending Now</span>
                 <h2 className="font-display text-3xl font-semibold text-foreground">Top Products</h2>
+                <p className="mt-1 text-sm text-muted-foreground">Curated picks loved by our customers</p>
               </div>
               <div className="hidden items-center gap-2 sm:flex">
-                <Button variant="outline" size="icon" className="h-9 w-9 border-border/50" onClick={() => setSlideIndex(i => Math.max(0, i - 1))}>
+                <Button variant="outline" size="icon" className="h-9 w-9 border-border/50" onClick={() => scrollCarousel('prev')}>
                   <ChevronLeft className="h-4 w-4" />
                 </Button>
-                <Button variant="outline" size="icon" className="h-9 w-9 border-border/50" onClick={nextSlide}>
+                <Button variant="outline" size="icon" className="h-9 w-9 border-border/50" onClick={() => scrollCarousel('next')}>
                   <ChevronRight className="h-4 w-4" />
                 </Button>
               </div>
             </motion.div>
+
             {isLoading ? (
               <div className="flex justify-center py-16"><Loader2 className="h-8 w-8 animate-spin text-secondary" /></div>
             ) : (
-              <div className="overflow-hidden">
-                <motion.div
-                  className="flex gap-5"
-                  animate={{ x: `-${slideIndex * 50}%` }}
-                  transition={{ type: 'spring', stiffness: 200, damping: 30 }}
-                >
-                  {trending.map(product => (
-                    <div key={product.id} className="w-[calc(50%-1.25rem)] shrink-0 sm:w-[calc(25%-1.875rem)]">
-                      <ProductCard product={product} />
-                    </div>
-                  ))}
-                </motion.div>
+              <div
+                ref={carouselRef}
+                className="flex gap-4 overflow-x-auto pb-4 -mx-1 px-1"
+                style={{
+                  scrollSnapType: 'x mandatory',
+                  scrollbarWidth: 'none',
+                  msOverflowStyle: 'none',
+                  WebkitOverflowScrolling: 'touch',
+                }}
+              >
+                {topProducts.map((product, i) => (
+                  <motion.div
+                    key={product.id}
+                    initial={{ opacity: 0, y: 24 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.06, duration: 0.4 }}
+                    className="shrink-0"
+                    style={{ scrollSnapAlign: 'start', width: 'min(72vw, 256px)' }}
+                  >
+                    <TopProductCard product={product} />
+                  </motion.div>
+                ))}
               </div>
             )}
           </div>

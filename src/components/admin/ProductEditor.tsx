@@ -1,13 +1,14 @@
 import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Switch } from '@/components/ui/switch';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Image, Layers, FileText, Plus } from 'lucide-react';
+import { Image, Layers, FileText, Plus, Star } from 'lucide-react';
 import type { AdminProductForm } from '@/components/admin/types';
 import { CATEGORIES } from '@/lib/types';
 
@@ -170,6 +171,21 @@ export function ProductEditor({ form, onSave, imageFiles, setImageFiles, gallery
                     <Checkbox checked={form.featured} onCheckedChange={(checked) => setForm((prev) => ({ ...prev, featured: Boolean(checked) }))} />
                     <span className="text-sm text-slate-600">Mark as featured</span>
                   </div>
+                </div>
+              </div>
+              <div className="rounded-2xl border border-amber-200/80 bg-amber-50/60 p-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2">
+                    <Star className="h-4 w-4 text-amber-600" />
+                    <div>
+                      <p className="text-sm font-semibold text-slate-800">Show in Top Products</p>
+                      <p className="text-xs text-slate-500">Appears in the Home page Top Products carousel</p>
+                    </div>
+                  </div>
+                  <Switch
+                    checked={form.top_product}
+                    onCheckedChange={(checked) => setForm((prev) => ({ ...prev, top_product: Boolean(checked) }))}
+                  />
                 </div>
               </div>
             </CardContent>

@@ -47,6 +47,7 @@ const emptyForm: AdminProductForm = {
   in_stock: true,
   rating: '0',
   featured: false,
+  top_product: false,
 };
 
 type ProductRow = Database['public']['Tables']['products']['Row'];
@@ -178,11 +179,13 @@ const Admin = () => {
       price: String(p.price),
       original_price: p.original_price ? String(p.original_price) : '',
       category: p.category,
-      tags: (p.tags || []).join(', '),
+      // strip managed flags from the free-text field so they don't duplicate
+      tags: (p.tags || []).filter(t => t !== 'top-product').join(', '),
       zodiac_sign: p.zodiac_sign || '',
       in_stock: p.in_stock,
       rating: String(p.rating ?? 0),
       featured: (p.tags ?? []).includes('featured'),
+      top_product: (p.tags ?? []).includes('top-product'),
     });
     setImageFiles([]);
     setGalleryPreview(p.image || null);
@@ -210,6 +213,10 @@ const Admin = () => {
       imageUrl = supabase.storage.from('product-images').getPublicUrl(fileName).data.publicUrl;
     }
 
+    // Build tags: user-typed tags (minus managed flags) + managed flags from toggles
+    const userTags = form.tags.split(',').map((t) => t.trim()).filter(t => t && t !== 'top-product');
+    if (form.top_product) userTags.push('top-product');
+
     const payload = {
       name: form.name,
       description: form.description,
@@ -217,7 +224,7 @@ const Admin = () => {
       original_price: form.original_price ? parseInt(form.original_price, 10) : null,
       category: form.category,
       image: imageUrl,
-      tags: form.tags.split(',').map((t) => t.trim()).filter(Boolean),
+      tags: userTags,
       zodiac_sign: form.zodiac_sign || null,
       in_stock: form.in_stock,
     };

@@ -9,6 +9,7 @@ export interface AdminProductForm {
   in_stock: boolean;
   rating: string;
   featured: boolean;
+  top_product: boolean;
 }
 
 export interface AdminProductRow {
