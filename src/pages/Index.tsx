@@ -41,7 +41,7 @@ const Index = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
   const scrollCarousel = (dir: 'prev' | 'next') => {
     if (!carouselRef.current) return;
-    carouselRef.current.scrollBy({ left: dir === 'next' ? 276 : -276, behavior: 'smooth' });
+    carouselRef.current.scrollBy({ left: dir === 'next' ? 184 : -184, behavior: 'smooth' });
   };
 
   return (
@@ -209,7 +209,7 @@ const Index = () => {
             ) : (
               <div
                 ref={carouselRef}
-                className="flex gap-4 overflow-x-auto pb-4 -mx-1 px-1"
+                className="flex gap-3 overflow-x-auto pb-3 -mx-1 px-1"
                 style={{
                   scrollSnapType: 'x mandatory',
                   scrollbarWidth: 'none',
@@ -225,7 +225,7 @@ const Index = () => {
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.06, duration: 0.4 }}
                     className="shrink-0"
-                    style={{ scrollSnapAlign: 'start', width: 'min(72vw, 256px)' }}
+                    style={{ scrollSnapAlign: 'start', width: 'min(46vw, 172px)' }}
                   >
                     <TopProductCard product={product} />
                   </motion.div>
