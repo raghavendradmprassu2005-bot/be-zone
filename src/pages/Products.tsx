@@ -10,10 +10,21 @@ import { Loader2, SlidersHorizontal, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Slider } from '@/components/ui/slider';
 
+// Maps the ?group= URL param to the category slugs that should be shown.
+const GROUP_MAP: Record<string, string[]> = {
+  women: ['beauty-care', 'hair-care', 'makeup', 'jewellery', 'makeup-rental'],
+  men: ['grooming'],
+  kids: ['kids-zone'],
+};
+
 const Products = () => {
   const [searchParams] = useSearchParams();
+  const groupParam = searchParams.get('group');
   const categoryParam = searchParams.get('category') as Category | null;
-  const [selectedCategory, setSelectedCategory] = useState<string>(categoryParam || 'all');
+  // Initialise from URL so that refreshing the page preserves the filter.
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    groupParam ? `group:${groupParam}` : categoryParam || 'all'
+  );
   const [sortBy, setSortBy] = useState('popularity');
   const [search, setSearch] = useState('');
   const [priceRange, setPriceRange] = useState([0, 10000]);
@@ -24,7 +35,15 @@ const Products = () => {
 
   const filtered = useMemo(() => {
     let result = [...products];
-    if (selectedCategory !== 'all') result = result.filter(p => p.category === selectedCategory);
+    if (selectedCategory !== 'all') {
+      if (selectedCategory.startsWith('group:')) {
+        const key = selectedCategory.slice(6);
+        const cats = GROUP_MAP[key] ?? [];
+        result = result.filter(p => cats.includes(p.category));
+      } else {
+        result = result.filter(p => p.category === selectedCategory);
+      }
+    }
     if (search) {
       const q = search.toLowerCase();
       result = result.filter(p =>

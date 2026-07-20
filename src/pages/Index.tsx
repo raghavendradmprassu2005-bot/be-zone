@@ -19,9 +19,9 @@ const trustSignals = [
 ];
 
 const categories = [
-  { name: 'Women', desc: 'Clothing, Accessories & Cosmetics', image: categoryWomen, href: '/products?category=crystals' },
-  { name: 'Men', desc: 'Clothing & Accessories', image: categoryMen, href: '/products?category=tarot' },
-  { name: 'Kids', desc: 'Clothing & Essentials', image: categoryKids, href: '/products?category=incense' },
+  { name: 'Women', desc: 'Clothing, Accessories & Cosmetics', image: categoryWomen, href: '/products?group=women' },
+  { name: 'Men', desc: 'Clothing & Accessories', image: categoryMen, href: '/products?group=men' },
+  { name: 'Kids', desc: 'Clothing & Essentials', image: categoryKids, href: '/products?group=kids' },
 ];
 
 const services = [
