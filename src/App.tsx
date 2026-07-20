@@ -25,6 +25,7 @@ import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { useFCMToken } from "@/hooks/useFCMToken";
+import ScrollToTop from "@/components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +46,7 @@ const App = () => (
               <Toaster />
               <Sonner />
               <BrowserRouter>
+                <ScrollToTop />
                 <Navbar />
                 <CartDrawer />
                 <ExitIntentPopup />
