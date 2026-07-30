@@ -74,7 +74,7 @@ const Footer = () => (
       </div>
       <div className="mt-10 border-t border-primary-foreground/10 pt-6 flex flex-col items-center gap-2">
         <p className="text-xs text-primary-foreground/40">© 2026 Be-Zone. All rights reserved.</p>
-        <p className="text-[12px] font-display italic text-primary-foreground/40">Made with ❤️ by Raghu</p>
+        <h2 className="marcellus text-[11px] md:text-[11px] leading-none tracking-wide text-white not-italic">Made by Raghu</h2>
       </div>
     </div>
   </footer>

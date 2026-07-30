@@ -216,6 +216,7 @@ campaigns: {
           id: string
           phone: string | null
           pincode: string | null
+          fcm_token: string | null
         }
         Insert: {
           address?: string | null
