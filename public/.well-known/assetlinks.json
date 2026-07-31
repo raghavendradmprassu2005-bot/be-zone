@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "in.bezone.app",
+      "sha256_cert_fingerprints": [
+        "08:B4:47:7A:51:CF:C8:AE:47:84:C0:93:33:E4:8E:3C:A6:85:2B:97:D1:35:63:C9:71:08:DF:93:09:00:A3:26"
+      ]
+    }
+  }
+]
