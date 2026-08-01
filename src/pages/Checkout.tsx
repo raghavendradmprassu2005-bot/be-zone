@@ -296,7 +296,7 @@ if (itemsError) {
               <div className="space-y-3">
                 {checkoutItems.map(item => (
                   <div key={item.product.id} className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">{item.product.name} × {item.quantity}</span>
+                    <span className="text-muted-foreground product-name-jakarta">{item.product.name} × {item.quantity}</span>
                     <span className="font-medium text-foreground">₹{item.product.price * item.quantity}</span>
                   </div>
                 ))}

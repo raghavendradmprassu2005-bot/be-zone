@@ -160,7 +160,7 @@ const SearchBar = ({
 
                       {/* Text */}
                       <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-medium text-foreground">{product.name}</p>
+                        <p className="truncate text-sm text-foreground product-name-jakarta">{product.name}</p>
                         <p className="truncate text-xs capitalize text-muted-foreground">
                           {product.category.replace(/-/g, ' ')}
                         </p>

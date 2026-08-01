@@ -1,4 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Artifika&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Marcellus&display=swap');
 @tailwind base;
 @tailwind components;
@@ -52,7 +54,7 @@
     --sidebar-border: 30 12% 88%;
     --sidebar-ring: 38 60% 52%;
 
-    font-family: 'DM Sans', system-ui, sans-serif;
+    font-family: 'Artifika', serif;
   }
 }
 
@@ -73,6 +75,13 @@
 @layer utilities {
   .font-display {
     font-family: 'Playfair Display', serif;
+  }
+  .product-name-jakarta {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    font-weight: 600;
+  }
+  .font-cormorant {
+    font-family: 'Cormorant Garamond', serif;
   }
   .font-body {
     font-family: 'DM Sans', system-ui, sans-serif;
@@ -177,4 +186,112 @@ svg {
 .marcellus {
   font-family: "Marcellus", serif !important;
   font-style: normal !important;
+}
+
+/* Brand announcement strip (premium, animated) */
+.brand-strip {
+  background: #211D1B; /* charcoal */
+  color: #FAF7F4; /* warm ivory */
+  overflow: hidden;
+  position: relative;
+}
+.brand-strip-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 0.5rem 1rem;
+}
+.brand-strip .ornament {
+  color: hsl(var(--gold));
+  font-size: 0.9rem;
+  opacity: 0.95;
+  display: inline-block;
+  line-height: 1;
+}
+.brand-strip .title-wrap {
+  display: inline-block;
+  overflow: hidden;
+  line-height: 1;
+}
+.brand-strip .title {
+  display: inline-block;
+  transform-origin: center;
+  transform: scaleX(0);
+  white-space: nowrap;
+  letter-spacing: 0.06em;
+  will-change: transform, opacity;
+}
+.brand-strip .subtitle {
+  display: block;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.85);
+  letter-spacing: 0.18em;
+  margin-top: 2px;
+}
+
+/* gold sweep */
+.brand-strip::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255, 209, 102, 0.05) 45%, rgba(255, 209, 102, 0.12) 52%, rgba(255,255,255,0) 100%);
+  transform: translateX(-110%);
+}
+/* subtle continuous shimmer */
+.brand-strip::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(90deg, rgba(255,209,102,0.02) 0%, rgba(255,209,102,0.03) 50%, rgba(255,209,102,0.02) 100%);
+  opacity: 0.6;
+  transform: translateX(-30%);
+}
+
+.brand-strip .sparkle {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  background: hsl(var(--gold));
+  border-radius: 50%;
+  opacity: 0;
+  filter: blur(0.4px);
+}
+
+/* Entrance animations */
+@keyframes bs-fade-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes bs-reveal { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes bs-sweep { from { transform: translateX(-110%); } to { transform: translateX(110%); } }
+@keyframes bs-sparkle { 0% { opacity: 0; transform: scale(0.6); } 40% { opacity: 1; transform: scale(1.1); } 100% { opacity: 0; transform: scale(0.9); } }
+@keyframes bs-shimmer-slow { from { transform: translateX(-30%); } to { transform: translateX(30%); } }
+
+/* apply animations on load */
+.brand-strip.animate { animation: bs-fade-in 800ms ease forwards; }
+.brand-strip.animate .title { animation: bs-reveal 700ms cubic-bezier(.2,.9,.2,1) 220ms forwards; }
+.brand-strip.animate::before { animation: bs-sweep 1100ms cubic-bezier(.2,.9,.2,1) 350ms forwards; }
+.brand-strip.animate::after { animation: bs-shimmer-slow 8s linear 900ms infinite alternate; opacity: 0.6; }
+.brand-strip .sparkle.left { left: 8%; top: 50%; animation: bs-sparkle 900ms ease 420ms forwards; }
+.brand-strip .sparkle.right { right: 8%; top: 50%; animation: bs-sparkle 900ms ease 420ms forwards; }
+
+/* Very subtle continuous shimmer after entrance */
+.brand-strip.settled::after { animation: bs-shimmer-slow 14s linear infinite; opacity: 0.35; }
+
+/* Responsive sizing */
+@media (min-width: 768px) {
+  .brand-strip-inner { padding: 0.65rem 1rem; }
+  .brand-strip .title { font-size: 1rem; }
+  .brand-strip .subtitle { font-size: 0.75rem; }
+}
+@media (max-width: 767px) {
+  .brand-strip-inner { padding: 0.45rem 0.75rem; }
+  .brand-strip .title { font-size: 0.9rem; }
+  .brand-strip .subtitle { font-size: 0.6rem; }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .brand-strip::before, .brand-strip::after, .brand-strip .title, .brand-strip .sparkle { animation: none !important; }
+  .brand-strip .title { transform: none !important; }
 }

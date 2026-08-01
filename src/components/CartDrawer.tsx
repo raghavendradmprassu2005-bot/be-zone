@@ -41,7 +41,7 @@ const CartDrawer = () => {
   {item.product.category === 'beauty-services' && '✨'}
                   </div>
                   <div className="flex flex-1 flex-col">
-                    <h4 className="text-sm font-medium text-foreground leading-tight">{item.product.name}</h4>
+                    <h4 className="text-sm text-foreground leading-tight product-name-jakarta">{item.product.name}</h4>
                     <p className="text-sm font-semibold text-foreground">₹{item.product.price}</p>
                     <div className="mt-auto flex items-center gap-2">
                       <Button variant="outline" size="icon" className="h-7 w-7" onClick={() => updateQuantity(item.product.id, item.quantity - 1)}>

@@ -134,7 +134,7 @@ const ProductDetail = () => {
             <p className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
               {product.category.replace('-', ' ')}
             </p>
-            <h1 className="mb-3 font-display text-2xl font-semibold text-foreground sm:text-3xl lg:text-4xl">{product.name}</h1>
+            <h1 className="mb-3 product-name-jakarta text-2xl font-semibold text-foreground sm:text-3xl lg:text-4xl">{product.name}</h1>
 
             <div className="mb-4 flex items-center gap-2">
               <div className="flex items-center gap-0.5">

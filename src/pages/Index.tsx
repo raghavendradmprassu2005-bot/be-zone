@@ -9,7 +9,7 @@ import heroImage from '@/assets/hero-beauty.jpg';
 import categoryWomen from '@/assets/category-women.jpg';
 import categoryMen from '@/assets/category-men.jpg';
 import categoryKids from '@/assets/category-kids.jpg';
-import { useRef } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import TopProductCard from '@/components/TopProductCard';
 
 const trustSignals = [
@@ -39,13 +39,42 @@ const Index = () => {
   const bestsellers = products.filter(p => p.tags.includes('bestseller'));
 
   const carouselRef = useRef<HTMLDivElement>(null);
+  const [brandStripClass, setBrandStripClass] = useState('');
   const scrollCarousel = (dir: 'prev' | 'next') => {
     if (!carouselRef.current) return;
     carouselRef.current.scrollBy({ left: dir === 'next' ? 184 : -184, behavior: 'smooth' });
   };
 
+  useEffect(() => {
+    // Entrance animation for brand strip; respect prefers-reduced-motion
+    const reduces = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduces) {
+      setBrandStripClass('settled');
+      return;
+    }
+    // play entrance, then settle into slow shimmer
+    setBrandStripClass('animate');
+    const t = setTimeout(() => setBrandStripClass('settled'), 2400);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
-    <div className="min-h-screen pb-16 md:pb-0">
+    <div className="min-h-screen pb-16 md:pb-0" style={{ fontFamily: "'Artifika', serif" }}>
+
+      {/* Brand announcement strip (between header and hero) */}
+      <section className={`brand-strip ${brandStripClass}`} role="region" aria-label="Bhoomika Beauty Parlour announcement">
+        <div className="brand-strip-inner container mx-auto px-4">
+          <span className="ornament hidden sm:inline">✦</span>
+          <div className="title-wrap">
+            <span className="title font-display">BHOOMIKA BEAUTY PARLOUR</span>
+            <span className="subtitle">BEAUTY • STYLE • CONFIDENCE</span>
+          </div>
+          <span className="ornament hidden sm:inline">✦</span>
+          <span className="sparkle left" aria-hidden="true"></span>
+          <span className="sparkle right" aria-hidden="true"></span>
+        </div>
+      </section>
+
       {/* Hero */}
       <section className="relative flex min-h-[80vh] items-center overflow-hidden pt-16">
         <div className="absolute inset-0">
@@ -58,7 +87,7 @@ const Index = () => {
             <span className="mb-4 inline-block rounded-full border border-secondary/30 bg-secondary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-secondary backdrop-blur-sm">
               New Collection 2026
             </span>
-            <h1 className="mb-3 font-display text-5xl font-semibold leading-[1.05] text-primary-foreground sm:text-6xl lg:text-7xl">
+            <h1 className="mb-3 font-display text-5xl font-semibold leading-[1.05] text-primary-foreground sm:text-6xl lg:text-7xl" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700 }}>
               Discover Your
               <span className="block text-glow">Perfect Style</span>
             </h1>
