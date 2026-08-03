@@ -10,7 +10,7 @@ const Wishlist = () => {
   return (
     <div className="min-h-screen pt-20">
       <div className="container mx-auto px-4 py-8">
-        <h1 className="mb-2 font-display text-4xl font-bold text-foreground">Wishlist</h1>
+        <h1 className="mb-2 font-display text-3xl font-semibold text-foreground sm:text-4xl">Wishlist</h1>
         <p className="mb-8 text-muted-foreground">Items you've saved for later</p>
         {items.length === 0 ? (
           <div className="py-20 text-center">
