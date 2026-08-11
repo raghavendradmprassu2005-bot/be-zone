@@ -2,6 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Artifika&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Marcellus&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&display=swap");
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -74,7 +75,15 @@
 
 @layer utilities {
   .font-display {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Cormorant Garamond', serif;
+  }
+  .font-luxury-display {
+    font-family: 'Cormorant Garamond', serif;
+    letter-spacing: 0.01em;
+  }
+  .font-luxury-sans {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    letter-spacing: 0.02em;
   }
   .product-name-jakarta {
     font-family: 'Plus Jakarta Sans', sans-serif;
@@ -85,6 +94,13 @@
   }
   .font-body {
     font-family: 'DM Sans', system-ui, sans-serif;
+  }
+  .text-luxury-gold {
+    color: #e3c07a;
+    text-shadow: 0 0 18px rgba(227, 192, 122, 0.16);
+  }
+  .text-luxury-ivory {
+    color: rgba(248, 241, 232, 0.96);
   }
   .text-glow {
     background: linear-gradient(135deg, hsl(38 72% 50%), hsl(10 50% 65%));
@@ -294,4 +310,8 @@ svg {
 @media (prefers-reduced-motion: reduce) {
   .brand-strip::before, .brand-strip::after, .brand-strip .title, .brand-strip .sparkle { animation: none !important; }
   .brand-strip .title { transform: none !important; }
+}
+
+.font-serif {
+  font-family: "Cormorant Garamond", ui-serif, Georgia, serif;
 }

@@ -11,6 +11,7 @@ import categoryMen from '@/assets/category-men.jpg';
 import categoryKids from '@/assets/category-kids.jpg';
 import { useRef, useEffect, useState } from 'react';
 import TopProductCard from '@/components/TopProductCard';
+import VisitStudio from "@/components/VisitStudio";
 
 const trustSignals = [
   { icon: Truck, title: 'Free Shipping', desc: 'On orders above ₹499' },
@@ -38,6 +39,9 @@ const Index = () => {
   const topProducts = products.filter(p => p.tags.includes('top-product'));
   const bestsellers = products.filter(p => p.tags.includes('bestseller'));
 
+  const earthSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1200"><defs><radialGradient id="g" cx="40%" cy="35%" r="80%"><stop offset="0%" stop-color="#fff6e0" stop-opacity="0.55"/><stop offset="34%" stop-color="#d8b86d" stop-opacity="0.24"/><stop offset="100%" stop-color="#0e0904" stop-opacity="0.95"/></radialGradient><radialGradient id="h" cx="64%" cy="60%" r="70%"><stop offset="0%" stop-color="#ffedd0" stop-opacity="0.18"/><stop offset="100%" stop-color="#000000" stop-opacity="0"/></radialGradient></defs><circle cx="600" cy="600" r="560" fill="#160f09"/><circle cx="600" cy="600" r="560" fill="url(#g)"/><circle cx="600" cy="600" r="520" fill="url(#h)"/><g fill="#cfb470" opacity="0.16"><path d="M360 420c40-60 115-90 180-100 50-8 92 14 132 44 36 28 64 64 100 96 38 34 88 48 136 58 36 8 78 18 110 38 18 10 30 24 34 44 6 28-8 58-26 80-28 34-76 42-118 40-50-2-98-18-140-42-34-20-62-48-98-66-52-26-110-30-160-54-30-14-56-36-70-68-12-28-16-64 0-92z"/><path d="M240 760c60-36 142-28 206 6 40 22 78 56 110 88 24 22 52 42 82 54 44 18 92 20 138 14 56-8 114-28 154-70 30-34 40-82 32-126-10-60-58-112-114-128-46-14-96-4-140 18-34 16-62 40-96 54-42 18-90 24-130 44-28 14-54 34-76 58-16 18-30 42-28 68 2 22 16 44 36 54z"/><circle cx="760" cy="760" r="28"/><circle cx="820" cy="660" r="18"/><circle cx="660" cy="720" r="24"/></g></svg>`;
+  const earthBackground = "url('/images/earth-gold.png')";
+
   const carouselRef = useRef<HTMLDivElement>(null);
   const [brandStripClass, setBrandStripClass] = useState('');
   const scrollCarousel = (dir: 'prev' | 'next') => {
@@ -59,7 +63,7 @@ const Index = () => {
   }, []);
 
   return (
-    <div className="min-h-screen pb-16 md:pb-0" style={{ fontFamily: "'Artifika', serif" }}>
+    <div className="min-h-screen pb-0" style={{ fontFamily: "'Artifika', serif" }}>
 
       {/* Brand announcement strip (between header and hero) */}
       <section className={`brand-strip ${brandStripClass}`} role="region" aria-label="Bhoomika Beauty Parlour announcement">
@@ -67,7 +71,7 @@ const Index = () => {
           <span className="ornament hidden sm:inline">✦</span>
           <div className="title-wrap">
             <span className="title font-display">BHOOMIKA BEAUTY PARLOUR</span>
-            <span className="subtitle">BEAUTY • STYLE • CONFIDENCE</span>
+
           </div>
           <span className="ornament hidden sm:inline">✦</span>
           <span className="sparkle left" aria-hidden="true"></span>
@@ -131,7 +135,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-12 text-center">
             <span className="mb-2 inline-block text-xs font-semibold uppercase tracking-widest text-secondary">✦ What We Offer</span>
-            <h2 className="mb-2 font-display text-3xl font-semibold text-foreground sm:text-4xl">Our Services</h2>
+            <h2 className="mb-2 font-display text-3xl font-semibold text-foreground sm:text-4xl"style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700 }}>Our Services</h2>
             <p className="text-sm text-muted-foreground tracking-wide">Premium beauty services crafted with care</p>
           </motion.div>
           <div className="grid gap-4 md:grid-cols-3">
@@ -161,7 +165,7 @@ const Index = () => {
       <section className="py-16 lg:py-24 bg-muted/20">
         <div className="container mx-auto px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-12 text-center">
-            <h2 className="mb-2 font-display text-3xl font-semibold text-foreground sm:text-4xl">Shop by Category</h2>
+            <h2 className="mb-2 font-display text-3xl font-semibold text-foreground sm:text-4xl"style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700 }}>Shop by Category</h2>
             <p className="text-sm text-muted-foreground tracking-wide">Curated collections for every style</p>
           </motion.div>
           <div className="grid gap-6 md:grid-cols-3">
@@ -293,7 +297,7 @@ const Index = () => {
               <span className="mb-2 inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-secondary">
                 <Sparkles className="h-3.5 w-3.5" /> AI Recommended
               </span>
-              <h2 className="font-display text-3xl font-semibold text-foreground">Recommended for You</h2>
+              <h2 className="font-display text-3xl font-semibold text-foreground"style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700 }}>Recommended for You</h2>
               <p className="mt-1 text-xs text-muted-foreground">Hand-picked by our AI based on what shoppers love</p>
             </div>
             <Button asChild variant="ghost" size="sm" className="text-sm font-medium text-secondary">
@@ -310,60 +314,12 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Visit Our Beauty Studio */}
-      <section className="py-16 lg:py-24">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="overflow-hidden rounded-2xl border border-border/40 bg-gradient-to-br from-card via-card to-secondary/5 p-8 lg:p-14"
-          >
-            <div className="mx-auto max-w-2xl text-center">
-              <span className="mb-3 inline-block text-xs font-semibold uppercase tracking-widest text-secondary">✦ Visit Us</span>
-              <h2 className="mb-3 font-display text-3xl font-semibold text-foreground sm:text-4xl">Visit Our Beauty Studio</h2>
-              <h3 className="mb-6 font-display text-xl text-secondary font-medium">Bhoomika Beauty Parlour</h3>
-              <div className="mb-6 flex items-start justify-center gap-3">
-                <MapPin className="mt-0.5 h-5 w-5 shrink-0 text-secondary" />
-                <div className="text-left">
-                  <p className="text-sm font-medium text-foreground">Near Govt Hospital</p>
-                  <p className="text-sm text-muted-foreground">Basavapatna, Davanagere, Karnataka</p>
-                </div>
-              </div>
-              <p className="mx-auto mb-8 max-w-md text-sm leading-relaxed text-muted-foreground">
-                Experience premium beauty services in our elegant studio. Our skilled beauticians provide personalized care for every client.
-              </p>
-              <div className="flex flex-wrap justify-center gap-3">
-                <a
-                  href="https://wa.me/917619305964?text=Hi,%20I%20want%20to%20know%20more%20about%20your%20beauty%20services/products."
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-lg gradient-nebula px-6 py-3 text-sm font-semibold text-foreground shadow-lg transition-all hover:shadow-xl hover:scale-[1.02]"
-                >
-                  Contact Us
-                  <ArrowRight className="h-4 w-4" />
-                </a>
-                <a
-                  href="https://maps.app.goo.gl/XTh2zrsuTndPabPt9?g_st=ac"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 rounded-lg border border-secondary/50 bg-secondary/10 px-6 py-3 text-sm font-semibold text-secondary transition-all hover:bg-secondary hover:text-secondary-foreground hover:shadow-lg hover:scale-[1.02]"
-                >
-                  <MapPin className="h-4 w-4" />
-                  Get Directions
-                </a>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </section>
-
       {/* Newsletter / CTA */}
       <section className="py-16">
         <div className="container mx-auto px-4">
           <div className="overflow-hidden rounded-2xl bg-foreground p-10 text-center lg:p-16">
             <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
-              <h2 className="mb-3 font-display text-3xl font-semibold text-primary-foreground sm:text-4xl">
+              <h2 className="mb-3 font-display text-3xl font-semibold text-primary-foreground sm:text-4xl"style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700 }}>
                 Don't Miss Exclusive Deals
               </h2>
               <p className="mx-auto mb-8 max-w-md text-sm text-primary-foreground/60">
@@ -386,7 +342,7 @@ const Index = () => {
       <section className="border-t border-border/50 py-16 lg:py-20">
         <div className="container mx-auto px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-10 text-center">
-            <h2 className="mb-2 font-display text-3xl font-semibold text-foreground sm:text-4xl">What Our Customers Say</h2>
+            <h2 className="mb-2 font-display text-3xl font-semibold text-foreground sm:text-4xl"style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700 }}>What Our Customers Say</h2>
             <p className="text-sm text-muted-foreground">Real reviews from happy shoppers</p>
           </motion.div>
           <div className="grid gap-6 md:grid-cols-3">
@@ -408,8 +364,8 @@ const Index = () => {
           </div>
         </div>
       </section>
-    </div>
+      <VisitStudio />
+  </div>
   );
 };
-
 export default Index;
