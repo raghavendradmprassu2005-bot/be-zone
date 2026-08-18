@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Star, Loader2, Truck, ShieldCheck, RotateCcw, Clock, ChevronRight, ChevronLeft, Scissors, Sparkles, Heart, MapPin } from 'lucide-react';
+import { ArrowRight, Star, Loader2, Truck, ShieldCheck, RotateCcw, Clock, ChevronRight, ChevronLeft, Scissors, Sparkles, Heart, Gem, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import ProductCard from '@/components/ProductCard';
 import { useProducts } from '@/hooks/useProducts';
@@ -12,6 +12,7 @@ import categoryKids from '@/assets/category-kids.jpg';
 import { useRef, useEffect, useState } from 'react';
 import TopProductCard from '@/components/TopProductCard';
 import VisitStudio from "@/components/VisitStudio";
+import Footer from '@/components/Footer';
 
 const trustSignals = [
   { icon: Truck, title: 'Free Shipping', desc: 'On orders above ₹499' },
@@ -27,9 +28,66 @@ const categories = [
 ];
 
 const services = [
-  { icon: Scissors, name: 'Tailoring', desc: 'Expert custom tailoring with precision fitting and premium craftsmanship for all occasions.' },
-  { icon: Sparkles, name: 'Eyebrow Shaping & Hair Style', desc: 'Professional eyebrow threading, shaping and trendy hairstyling by skilled beauticians.' },
-  { icon: Heart, name: 'Saree Kuch (Draping & Styling)', desc: 'Elegant saree draping and styling for weddings, festivals and special celebrations.' },
+  {
+    number: '01',
+    label: 'Atelier Craft',
+    name: 'Tailoring',
+    desc: 'Expert custom tailoring with precision fitting and premium craftsmanship for all occasions.',
+    icon: Scissors,
+    theme: 'light' as const,
+    bg: '#F8F2E7',
+    surface: '#FBF6EC',
+    text: '#2B2420',
+    muted: '#6B5F52',
+    accent: '#B08D57',
+    border: 'rgba(176,141,87,0.28)',
+    glow: 'rgba(214,180,120,0.55)',
+  },
+  {
+    number: '02',
+    label: 'Beauty Studio',
+    name: 'Eyebrow Shaping & Hair Style',
+    desc: 'Professional eyebrow threading, shaping and trendy hairstyling by skilled beauticians.',
+    icon: Sparkles,
+    theme: 'light' as const,
+    bg: '#F6E9E7',
+    surface: '#FAF0EE',
+    text: '#2E2220',
+    muted: '#7A5D5A',
+    accent: '#B9828A',
+    border: 'rgba(185,130,138,0.28)',
+    glow: 'rgba(196,133,140,0.5)',
+  },
+  {
+    number: '03',
+    label: 'Bridal Editorial',
+    name: 'Saree Kuch (Draping & Styling)',
+    desc: 'Elegant saree draping and styling for weddings, festivals and special celebrations.',
+    icon: Heart,
+    theme: 'dark' as const,
+    bg: '#2A1017',
+    surface: '#331319',
+    text: '#F3E7E1',
+    muted: '#C9A9A6',
+    accent: '#CBA66B',
+    border: 'rgba(203,166,107,0.3)',
+    glow: 'rgba(122,20,42,0.55)',
+  },
+  {
+    number: '04',
+    label: 'Jewellery Boutique',
+    name: 'Necklaces for Rent',
+    desc: 'Elegant necklaces available for rent to complete your look for weddings, celebrations and special occasions.',
+    icon: Gem,
+    theme: 'dark' as const,
+    bg: '#0E241C',
+    surface: '#123027',
+    text: '#EAF2EC',
+    muted: '#9FC2B2',
+    accent: '#CDB985',
+    border: 'rgba(205,185,133,0.3)',
+    glow: 'rgba(20,95,72,0.55)',
+  },
 ];
 
 const Index = () => {
@@ -49,6 +107,80 @@ const Index = () => {
     carouselRef.current.scrollBy({ left: dir === 'next' ? 184 : -184, behavior: 'smooth' });
   };
 
+  const servicesScrollRef = useRef<HTMLDivElement>(null);
+  const [activeServiceIndex, setActiveServiceIndex] = useState(0);
+  const [serviceProgress, setServiceProgress] = useState<number[]>([1, 0, 0, 0]);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const servicesRAF = useRef<number | null>(null);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mq.matches);
+    const listener = () => setPrefersReducedMotion(mq.matches);
+    mq.addEventListener?.('change', listener);
+    return () => mq.removeEventListener?.('change', listener);
+  }, []);
+
+  useEffect(() => {
+  return () => {
+    if (servicesRAF.current) {
+      cancelAnimationFrame(servicesRAF.current);
+    }
+  };
+}, []);
+
+  const computeServiceProgress = (el: HTMLDivElement) => {
+    const children = Array.from(el.children) as HTMLElement[];
+    const containerCenter = el.scrollLeft + el.clientWidth / 2;
+    const maxDist = el.clientWidth / 2 + 40;
+    let closestIndex = 0;
+    let closestDist = Infinity;
+    const progress = children.map((child, idx) => {
+      const childCenter = child.offsetLeft + child.offsetWidth / 2;
+      const dist = Math.abs(containerCenter - childCenter);
+      if (dist < closestDist) {
+        closestDist = dist;
+        closestIndex = idx;
+      }
+      const ratio = 1 - Math.min(dist / maxDist, 1);
+      return Math.max(0, ratio);
+    });
+    return { progress, closestIndex };
+  };
+
+  const handleServicesScroll = (el: HTMLDivElement | null) => {
+  if (!el) return;
+
+  if (servicesRAF.current) {
+    cancelAnimationFrame(servicesRAF.current);
+  }
+
+  servicesRAF.current = requestAnimationFrame(() => {
+    const { progress, closestIndex } =
+      computeServiceProgress(el);
+
+    setServiceProgress(progress);
+
+    // Mobile: active service follows the card currently
+    // positioned in the center.
+    //
+    // Desktop: active service is controlled by mouse hover,
+    // so scrolling alone does not remove the hover reveal.
+    if (window.innerWidth < 768) {
+      setActiveServiceIndex(closestIndex);
+    }
+  });
+};
+  const scrollToService = (index: number, el: HTMLDivElement | null) => {
+    if (!el) return;
+    const child = el.children[index] as HTMLElement | undefined;
+    if (!child) return;
+    const targetLeft = child.offsetLeft - (el.clientWidth - child.offsetWidth) / 2;
+    el.scrollTo({ left: targetLeft, behavior: 'smooth' });
+  };
+
+  const activeService = services[activeServiceIndex];
+
   useEffect(() => {
     // Entrance animation for brand strip; respect prefers-reduced-motion
     const reduces = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -60,6 +192,7 @@ const Index = () => {
     setBrandStripClass('animate');
     const t = setTimeout(() => setBrandStripClass('settled'), 2400);
     return () => clearTimeout(t);
+    
   }, []);
 
   return (
@@ -131,32 +264,384 @@ const Index = () => {
       </section>
 
       {/* Our Services */}
-      <section className="py-16 lg:py-24">
-        <div className="container mx-auto px-4">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-12 text-center">
-            <span className="mb-2 inline-block text-xs font-semibold uppercase tracking-widest text-secondary">✦ What We Offer</span>
-            <h2 className="mb-2 font-display text-3xl font-semibold text-foreground sm:text-4xl"style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700 }}>Our Services</h2>
-            <p className="text-sm text-muted-foreground tracking-wide">Premium beauty services crafted with care</p>
+      <section className="relative overflow-hidden py-12 lg:py-20">
+        <style>{`
+          .services-scroll::-webkit-scrollbar {
+            display: none;
+          }
+
+          .services-scroll {
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+          }
+
+          .service-card {
+            scroll-snap-stop: always;
+          }
+
+          @media (prefers-reduced-motion: reduce) {
+            .service-card,
+            .service-background,
+            .service-glow {
+              transition: none !important;
+              animation: none !important;
+            }
+          }
+        `}</style>
+
+        {/* Soft, fading background — stays inside Our Services */}
+        <motion.div
+          className="pointer-events-none absolute inset-0 -z-10 service-background"
+          animate={{
+            background: `linear-gradient(180deg, ${activeService.bg} 0%, ${activeService.bg}CC 38%, ${activeService.bg}66 72%, transparent 100%)`,
+          }}
+          transition={{
+            duration: prefersReducedMotion ? 0.15 : 1.2,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+        >
+          {services.map((service, i) => (
+            <motion.div
+              key={service.name}
+              aria-hidden="true"
+              className="absolute inset-0 service-glow"
+              initial={false}
+              animate={{
+                opacity: activeServiceIndex === i ? 0.65 : 0,
+              }}
+              transition={{
+                duration: prefersReducedMotion ? 0.15 : 1.1,
+                ease: "easeInOut",
+              }}
+              style={{
+                background: `radial-gradient(70% 55% at 50% 25%, ${service.glow}, transparent 72%)`,
+                filter: "blur(55px)",
+              }}
+            />
+          ))}
+
+          <div
+            className="absolute inset-0"
+            style={{
+              background:
+                "linear-gradient(180deg, transparent 45%, rgba(255,255,255,0.18) 100%)",
+            }}
+          />
+        </motion.div>
+
+        <div className="container relative mx-auto px-4">
+          {/* Section heading */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-8 text-center lg:mb-12"
+          >
+            <motion.span
+              className="mb-3 inline-block text-xs font-semibold uppercase tracking-[0.25em]"
+              animate={{ color: activeService.accent }}
+              transition={{
+                duration: prefersReducedMotion ? 0.15 : 0.8,
+                ease: "easeInOut",
+              }}
+            >
+              The Be-Zone Experience
+            </motion.span>
+
+            <motion.h2
+              className="mb-3 font-display text-3xl font-semibold sm:text-4xl lg:text-5xl"
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontWeight: 700,
+              }}
+              animate={{ color: activeService.text }}
+              transition={{
+                duration: prefersReducedMotion ? 0.15 : 0.8,
+                ease: "easeInOut",
+              }}
+            >
+              Our Services
+            </motion.h2>
+
+            <motion.p
+              className="text-sm tracking-wide"
+              animate={{ color: activeService.muted }}
+              transition={{
+                duration: prefersReducedMotion ? 0.15 : 0.8,
+                ease: "easeInOut",
+              }}
+            >
+              Premium beauty services crafted with care
+            </motion.p>
           </motion.div>
-          <div className="grid gap-4 md:grid-cols-3">
-            {services.map((service, i) => (
-              <motion.div
-                key={service.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.15 }}
-                whileHover={{ y: -3 }}
-                className="group rounded-xl border border-border/40 bg-card p-5 shadow-sm transition-shadow duration-300 hover:shadow-premium cursor-pointer"
-              >
-                <div className="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/10 text-secondary transition-colors duration-300 group-hover:bg-secondary group-hover:text-foreground">
-                  <service.icon className="h-5 w-5" />
-                </div>
-                <h3 className="mb-1 font-display text-lg font-semibold text-foreground">{service.name}</h3>
-                <p className="text-xs leading-relaxed text-muted-foreground">{service.desc}</p>
-                <div className="mt-3 h-0.5 w-0 rounded-full bg-secondary transition-all duration-500 group-hover:w-full" />
-              </motion.div>
-            ))}
+
+          {/* MOBILE — one card at a time */}
+          <div className="md:hidden">
+            <div
+              ref={servicesScrollRef}
+              onScroll={(e) => handleServicesScroll(e.currentTarget)}
+              className="services-scroll -mx-4 flex gap-3 overflow-x-auto px-[7.5vw] pb-2"
+              style={{
+                scrollSnapType: "x mandatory",
+                scrollSnapStop: "always",
+                scrollPaddingInline: "7.5vw",
+                scrollBehavior: prefersReducedMotion ? "auto" : "smooth",
+                WebkitOverflowScrolling: "touch",
+                overscrollBehaviorX: "contain",
+                touchAction: "auto",
+              }}
+            >
+              {services.map((service, i) => {
+                const p = serviceProgress[i] ?? (i === activeServiceIndex ? 1 : 0);
+                const scale = prefersReducedMotion ? 1 : 0.985 + p * 0.015;
+                const opacity = prefersReducedMotion ? 1 : 0.86 + p * 0.14;
+                const blurPx = prefersReducedMotion ? 0 : Math.min((1 - p) * 0.8, 0.8);
+
+                return (
+                  <div
+                    key={service.name}
+                    className="service-card shrink-0"
+                    style={{
+                      scrollSnapAlign: "center",
+                      scrollSnapStop: "always",
+                      width: "85vw",
+                      maxWidth: 360,
+                    }}
+                  >
+                    <motion.div
+                      animate={{ scale, opacity }}
+                      transition={{
+                        duration: prefersReducedMotion ? 0.1 : 0.3,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
+                      style={{
+                        filter: `blur(${blurPx}px)`,
+                        background: service.surface,
+                        borderColor: service.border,
+                        boxShadow:
+                          p > 0.75
+                            ? `0 20px 45px -18px ${service.glow}`
+                            : "0 8px 20px -12px rgba(0,0,0,0.14)",
+                      }}
+                      className="relative min-h-[350px] rounded-2xl border p-6"
+                    >
+                      <div className="mb-5 flex items-start justify-between">
+                        <span
+                          className="font-display text-4xl font-light leading-none"
+                          style={{ color: service.accent, opacity: 0.55 }}
+                        >
+                          {service.number}
+                        </span>
+
+                        <div
+                          className="flex h-11 w-11 items-center justify-center rounded-full"
+                          style={{
+                            background: `${service.accent}1F`,
+                            color: service.accent,
+                          }}
+                        >
+                          <service.icon className="h-5 w-5" />
+                        </div>
+                      </div>
+
+                      <span
+                        className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.2em]"
+                        style={{ color: service.accent }}
+                      >
+                        {service.label}
+                      </span>
+
+                      <h3
+                        className="mb-3 font-display text-2xl font-semibold leading-tight"
+                        style={{
+                          color: service.text,
+                          fontFamily: "'Cormorant Garamond', serif",
+                        }}
+                      >
+                        {service.name}
+                      </h3>
+
+                      <p
+                        className="mb-5 text-sm leading-relaxed"
+                        style={{ color: service.muted }}
+                      >
+                        {service.desc}
+                      </p>
+
+                      <div
+                        className="mb-5 h-px w-10"
+                        style={{ background: service.accent }}
+                      />
+                    </motion.div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Mobile service numbers — white background */}
+            <div className="mx-auto mt-5 flex w-fit items-center gap-1 rounded-full border border-white/70 bg-white/95 px-2 py-1.5 shadow-sm backdrop-blur-sm">
+              {services.map((service, i) => (
+                <span key={service.name} className="flex items-center">
+                  {i > 0 && (
+                    <span className="px-0.5 text-[9px] text-[#B8A88D]">—</span>
+                  )}
+                  <button
+                    type="button"
+                    aria-label={`Go to ${service.name}`}
+                    onClick={() => scrollToService(i, servicesScrollRef.current)}
+                    className="min-w-[32px] rounded-full px-2 py-1 font-display text-[11px] font-semibold tracking-wider transition-all duration-300"
+                    style={{
+                      color: i === activeServiceIndex ? service.accent : "#7C7063",
+                      background: i === activeServiceIndex ? "#F7F2E9" : "transparent",
+                    }}
+                  >
+                    {service.number}
+                  </button>
+                </span>
+              ))}
+            </div>
+          </div>
+
+          {/* DESKTOP — exactly four cards in one row */}
+          <div className="hidden md:block">
+            <div className="grid grid-cols-2 gap-5 lg:grid-cols-4 lg:gap-4">
+              {services.map((service, i) => {
+                const isHovered = activeServiceIndex === i;
+
+                return (
+                  <div
+                    key={service.name}
+                    className="service-card min-w-0"
+                    onMouseEnter={() => {
+                      if (!prefersReducedMotion) {
+                        setActiveServiceIndex(i);
+                      }
+                    }}
+                  >
+                    <motion.div
+                      animate={{
+                        opacity: isHovered ? 1 : 0.58,
+                        scale: isHovered ? 1 : 0.975,
+                        y: isHovered ? 0 : 5,
+                        filter: prefersReducedMotion
+                          ? "blur(0px)"
+                          : isHovered
+                            ? "blur(0px)"
+                            : "blur(4px)",
+                      }}
+                      transition={{
+                        duration: prefersReducedMotion ? 0.1 : 0.5,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
+                      style={{
+                        background: service.surface,
+                        borderColor: service.border,
+                        boxShadow: isHovered
+                          ? `0 25px 55px -22px ${service.glow}`
+                          : "0 8px 20px -12px rgba(0,0,0,0.15)",
+                        minHeight: 400,
+                      }}
+                      className="relative flex h-full flex-col rounded-2xl border p-6 lg:p-7"
+                    >
+                      <div className="mb-6 flex items-start justify-between">
+                        <span
+                          className="font-display text-4xl font-light leading-none lg:text-5xl"
+                          style={{
+                            color: service.accent,
+                            opacity: isHovered ? 0.7 : 0.4,
+                          }}
+                        >
+                          {service.number}
+                        </span>
+
+                        <motion.div
+                          animate={{
+                            scale: isHovered ? 1.08 : 1,
+                            rotate: isHovered ? 0 : -3,
+                          }}
+                          transition={{
+                            duration: prefersReducedMotion ? 0.1 : 0.5,
+                            ease: [0.22, 1, 0.36, 1],
+                          }}
+                          className="flex h-11 w-11 items-center justify-center rounded-full lg:h-12 lg:w-12"
+                          style={{
+                            background: `${service.accent}1F`,
+                            color: service.accent,
+                          }}
+                        >
+                          <service.icon className="h-5 w-5 lg:h-6 lg:w-6" />
+                        </motion.div>
+                      </div>
+
+                      <span
+                        className="mb-2 block text-[10px] font-semibold uppercase tracking-[0.2em] lg:text-[11px]"
+                        style={{ color: service.accent }}
+                      >
+                        {service.label}
+                      </span>
+
+                      <h3
+                        className="mb-3 font-display text-2xl font-semibold leading-tight lg:text-[28px]"
+                        style={{
+                          color: service.text,
+                          fontFamily: "'Cormorant Garamond', serif",
+                        }}
+                      >
+                        {service.name}
+                      </h3>
+
+                      <p
+                        className="mb-6 flex-1 text-sm leading-relaxed"
+                        style={{ color: service.muted }}
+                      >
+                        {service.desc}
+                      </p>
+
+                      <motion.div
+                        animate={{ width: isHovered ? 56 : 40 }}
+                        transition={{
+                          duration: prefersReducedMotion ? 0.1 : 0.45,
+                          ease: [0.22, 1, 0.36, 1],
+                        }}
+                        className="mb-5 h-px"
+                        style={{ background: service.accent }}
+                      />
+
+                      <span
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider"
+                        style={{ color: service.accent }}
+                      >
+                        Explore Service
+                        <ArrowRight className="h-3 w-3" />
+                      </span>
+                    </motion.div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Desktop numbers — white background */}
+            <div className="mx-auto mt-6 flex w-fit items-center gap-1 rounded-full border border-white/70 bg-white/95 px-2 py-1.5 shadow-sm backdrop-blur-sm">
+              {services.map((service, i) => (
+                <span key={service.name} className="flex items-center">
+                  {i > 0 && (
+                    <span className="px-0.5 text-[9px] text-[#B8A88D]">—</span>
+                  )}
+                  <button
+                    type="button"
+                    aria-label={`Show ${service.name}`}
+                    onClick={() => setActiveServiceIndex(i)}
+                    className="min-w-[32px] rounded-full px-2 py-1 font-display text-[11px] font-semibold tracking-wider transition-all duration-300"
+                    style={{
+                      color: i === activeServiceIndex ? service.accent : "#7C7063",
+                      background: i === activeServiceIndex ? "#F7F2E9" : "transparent",
+                    }}
+                  >
+                    {service.number}
+                  </button>
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </section>

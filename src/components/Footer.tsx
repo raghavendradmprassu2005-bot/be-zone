@@ -31,7 +31,7 @@ const Footer = () => (
     whileInView="visible"
     viewport={{ once: true, amount: 0.15 }}
     variants={footerContainer}
-    className="border-t border-border/50 bg-foreground text-primary-foreground"
+    className="relative z-0 border-t border-border/50 bg-foreground text-primary-foreground"
   >
     <div className="container mx-auto px-4 py-12 pb-[calc(110px+env(safe-area-inset-bottom))] lg:py-16 lg:pb-16">
       <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
