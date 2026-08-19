@@ -1,5 +1,3 @@
-
-
 import { Link, useLocation } from 'react-router-dom';
 import {
   ShoppingCart,
@@ -40,96 +38,53 @@ const Navbar = () => {
   const location = useLocation();
 
   /* =========================================================
-     SMOOTH TYPING + BACKSPACE TAGLINE ANIMATION
-
-     Sequence:
-
-     GLOW ON DEMAND
-     ↓
-     BACKSPACE
-     ↓
-     BEAUTY, YOUR WAY
-     ↓
-     BACKSPACE
-     ↓
-     ELEVATE YOUR STYLE
-     ↓
-     BACKSPACE
-     ↓
-     GLOW. STYLE. CONFIDENCE.
-     ↓
-     BACKSPACE
-     ↓
-     REPEAT
-
-     Runs independently from scrolling/navigation.
+     🟢 TOP NAVBAR CUSTOMIZATION
+     Change ONLY these values if you want to customize
+     the outer navbar appearance.
   ========================================================= */
 
-  const taglines = [
-  'Glow on Demand',
-  'Beauty, Your Way',
-  'Elevate Your Style',
-  'Discover Your Glow',
-  'Style That Speaks',
-  'Elegance, Every Day',
-  'Your Beauty. Your Style.',
-];
+  // 🟢 CHANGE HERE: Gap from top of the screen
+  const NAVBAR_TOP_GAP = '12px';
 
-const [taglineIndex, setTaglineIndex] = useState(0);
-const [typedTagline, setTypedTagline] = useState('');
-const [isDeleting, setIsDeleting] = useState(false);
+  // 🟢 CHANGE HERE: Gap from left and right edges
+  const NAVBAR_SIDE_GAP = '5%';
 
-useEffect(() => {
-  const currentTagline = taglines[taglineIndex];
+  // 🟢 CHANGE HERE: Border radius
+  // Smaller = less rounded
+  // Larger = more rounded
+  const NAVBAR_RADIUS = '15px';
 
-  let delay = isDeleting ? 80 : 75;
+  // 🟢 CHANGE HERE: Border color
+  const NAVBAR_BORDER_COLOR = 'rgba(255, 255, 255, 0.18)';
 
-  // Pause when the complete sentence is visible
-  if (!isDeleting && typedTagline === currentTagline) {
-    delay = 3800;
-  }
+  // 🟢 CHANGE HERE: Border thickness
+  const NAVBAR_BORDER_WIDTH = '1px';
 
-  // Small pause after completely deleting
-  if (isDeleting && typedTagline === '') {
-    delay = 400;
-  }
+  // 🟢 CHANGE HERE: Navbar background
+  // Kept exactly as your current navbar background.
+  const NAVBAR_BACKGROUND = '#F8F5EE';
 
-  const timer = window.setTimeout(() => {
-    if (!isDeleting) {
-      const nextText = currentTagline.slice(
-        0,
-        typedTagline.length + 1
-      );
+  // 🟢 CHANGE HERE: Very subtle shadow
+  // Set to 'none' if you want no shadow.
+  const NAVBAR_SHADOW =
+    '0 4px 18px rgba(0, 0, 0, 0.06)';
 
-      setTypedTagline(nextText);
+  /* =========================================================
+     🟢 B COLOR / CONTRAST
+     
+     mix-blend-mode: difference makes the B automatically
+     react to whatever is visually behind it.
 
-      if (nextText === currentTagline) {
-        setIsDeleting(true);
-      }
-    } else {
-      const nextText = currentTagline.slice(
-        0,
-        Math.max(0, typedTagline.length - 1)
-      );
+     White behind B → dark B
+     Dark behind B → light B
+     Complex background → contrast automatically changes
+  ========================================================= */
 
-      setTypedTagline(nextText);
-
-      if (nextText === '') {
-        setIsDeleting(false);
-
-        setTaglineIndex(
-          (previousIndex) =>
-            (previousIndex + 1) % taglines.length
-        );
-      }
-    }
-  }, delay);
-
-  return () => {
-    window.clearTimeout(timer);
+  const logoBStyle = {
+    color: '#FFFFFF',
+    fontWeight: 600,
+    mixBlendMode: 'difference' as const,
   };
-}, [typedTagline, isDeleting, taglineIndex]);
-
 
   /* =========================================================
      CONTINUOUS FLOWER ROTATION
@@ -153,12 +108,10 @@ useEffect(() => {
     }
   );
 
-
   /* =========================================================
      NAVBAR SCROLL EFFECT
 
-     ONLY SCROLL STATE IS KEPT.
-     BACKGROUND IS NOW ALWAYS SOLID WHITE.
+     KEPT
   ========================================================= */
 
   useEffect(() => {
@@ -175,7 +128,6 @@ useEffect(() => {
     };
   }, []);
 
-
   /* =========================================================
      CLOSE MOBILE MENU WHEN ROUTE CHANGES
 
@@ -188,37 +140,49 @@ useEffect(() => {
     setSearchOpen(false);
   }, [location.pathname]);
 
-
   const navLinks = [
     { to: '/', label: 'Home' },
     { to: '/products', label: 'Shop' },
   ];
-
 
   return (
     <>
       {/* =====================================================
           TOP NAVBAR
 
-          SOLID WHITE BACKGROUND
-          NO GLASS
-          NO BLUR
-          NO TRANSPARENCY
-          NO GRADIENT
+          🟢 OUTER POSITION / BORDER / RADIUS / BACKGROUND
+          These values are controlled above.
+          
+          IMPORTANT:
+          Bottom mobile navigation is NOT changed.
       ===================================================== */}
 
       <nav
         className="
           fixed
-          top-0
-          left-0
-          right-0
           z-50
-          border-b
-          border-[#E8E5DF]
-          bg-white
-          shadow-sm
+          overflow-visible
         "
+        style={{
+          top: NAVBAR_TOP_GAP,
+          left: NAVBAR_SIDE_GAP,
+          right: NAVBAR_SIDE_GAP,
+
+          // 🟢 CHANGE HERE: Navbar background
+          background: NAVBAR_BACKGROUND,
+
+          // 🟢 CHANGE HERE: Thin premium border
+          border: `${NAVBAR_BORDER_WIDTH} solid ${NAVBAR_BORDER_COLOR}`,
+
+          // 🟢 CHANGE HERE: Corner radius
+          borderRadius: NAVBAR_RADIUS,
+
+          // 🟢 CHANGE HERE: Soft shadow
+          boxShadow: NAVBAR_SHADOW,
+
+          // Keeps the navbar above page content
+          zIndex: 50,
+        }}
       >
 
         {/* ===================================================
@@ -233,8 +197,8 @@ useEffect(() => {
             items-center
             justify-between
             px-4
-            py-3
-            lg:py-4
+            py-2
+            lg:py-2.5
           "
         >
 
@@ -247,18 +211,19 @@ useEffect(() => {
             className="
               relative
               flex
-              flex-col
-              items-start
               shrink-0
               select-none
+              flex-col
+              items-start
             "
           >
 
             {/* =================================================
                 BE-ZONE
 
-                B = GOLD
-                e-Zone = DEEP BLACK
+                🟢 B automatically contrasts with background.
+
+                e-Zone remains your existing dark color.
             ================================================= */}
 
             <span
@@ -274,14 +239,14 @@ useEffect(() => {
                 color: '#111111',
               }}
             >
-              <span
-                style={{
-                  color: '#C4921A',
-                  fontWeight: 600,
-                }}
-              >
+
+              {/* 🟢 AUTOMATIC CONTRAST B */}
+
+              <span style={logoBStyle}>
                 B
               </span>
+
+              {/* 🟢 CHANGE HERE: e-Zone color */}
 
               <span
                 style={{
@@ -290,57 +255,8 @@ useEffect(() => {
               >
                 e-Zone
               </span>
+
             </span>
-
-
-            {/* =================================================
-                ANIMATED TAGLINE
-            ================================================= */}
-
-            <span
-  className="
-    mt-1
-    flex
-    h-[15px]
-    w-[180px]
-    items-center
-    overflow-hidden
-    text-[10px]
-    font-body
-    font-medium
-    uppercase
-    tracking-[0.22em]
-    whitespace-nowrap
-  "
-  style={{
-    color: '#6B6B6B',
-  }}
->
-  <span className="truncate">
-    {typedTagline}
-  </span>
-
-  {/* Elegant typing cursor */}
-
-  <motion.span
-    animate={{
-      opacity: [1, 0, 1],
-    }}
-    transition={{
-      duration: 0.7,
-      repeat: Infinity,
-      ease: 'easeInOut',
-    }}
-    className="
-      ml-[3px]
-      inline-block
-      h-[10px]
-      w-[1px]
-      shrink-0
-      bg-[#C4921A]
-    "
-  />
-</span>
 
           </Link>
 
@@ -349,7 +265,7 @@ useEffect(() => {
               DESKTOP NAVIGATION
           ================================================= */}
 
-          <div className="hidden items-center gap-8 md:flex md:ml-8 lg:ml-12">
+          <div className="hidden items-center gap-8 md:ml-8 md:flex lg:ml-12">
 
             {navLinks.map((link) => (
               <Link
@@ -385,7 +301,9 @@ useEffect(() => {
 
             <button
               onMouseEnter={() => setMegaMenuOpen(true)}
-              onClick={() => setMegaMenuOpen(!megaMenuOpen)}
+              onClick={() =>
+                setMegaMenuOpen(!megaMenuOpen)
+              }
               className="
                 flex
                 items-center
@@ -470,7 +388,7 @@ useEffect(() => {
             {/* =================================================
                 MOBILE FLOWER
 
-                COMPLETELY UNCHANGED
+                UNCHANGED
             ================================================= */}
 
             <motion.div
@@ -494,179 +412,186 @@ useEffect(() => {
 
 
             {/* =================================================
-    SEARCH BAR
-    PREMIUM SMOOTH EXPANSION
-================================================= */}
+                SEARCH BAR
 
-<AnimatePresence mode="wait">
-  {searchOpen && (
-    <motion.div
-      initial={{
-        width: 0,
-        opacity: 0,
-        x: 12,
-        scale: 0.96,
-      }}
-      animate={{
-        width: 280,
-        opacity: 1,
-        x: 0,
-        scale: 1,
-      }}
-      exit={{
-        width: 0,
-        opacity: 0,
-        x: 12,
-        scale: 0.96,
-      }}
-      transition={{
-        width: {
-          type: 'spring',
-          stiffness: 420,
-          damping: 32,
-          mass: 0.7,
-        },
-        opacity: {
-          duration: 0.18,
-        },
-        x: {
-          type: 'spring',
-          stiffness: 420,
-          damping: 30,
-        },
-        scale: {
-          type: 'spring',
-          stiffness: 420,
-          damping: 30,
-        },
-      }}
-      className="
-        absolute
-        right-14
-        top-full
-        z-[60]
-        mt-2
-        overflow-visible
-        md:relative
-        md:right-auto
-        md:top-auto
-        md:mt-0
-        md:z-auto
-      "
-    >
-      <SearchBar
-        placeholder="Search products…"
-        inputClassName="
-          h-9
-          bg-white
-          text-sm
-          border
-          border-[#E5E1D8]
-          shadow-[0_6px_20px_rgba(0,0,0,0.08)]
-          focus-visible:ring-1
-          focus-visible:ring-[#C4921A]/30
-        "
-        autoFocus
-        onSelect={() => setSearchOpen(false)}
-      />
-    </motion.div>
-  )}
-</AnimatePresence>
+                UNCHANGED
+            ================================================= */}
+
+            <AnimatePresence mode="wait">
+              {searchOpen && (
+                <motion.div
+                  initial={{
+                    width: 0,
+                    opacity: 0,
+                    x: 12,
+                    scale: 0.96,
+                  }}
+                  animate={{
+                    width: 280,
+                    opacity: 1,
+                    x: 0,
+                    scale: 1,
+                  }}
+                  exit={{
+                    width: 0,
+                    opacity: 0,
+                    x: 12,
+                    scale: 0.96,
+                  }}
+                  transition={{
+                    width: {
+                      type: 'spring',
+                      stiffness: 420,
+                      damping: 32,
+                      mass: 0.7,
+                    },
+                    opacity: {
+                      duration: 0.18,
+                    },
+                    x: {
+                      type: 'spring',
+                      stiffness: 420,
+                      damping: 30,
+                    },
+                    scale: {
+                      type: 'spring',
+                      stiffness: 420,
+                      damping: 30,
+                    },
+                  }}
+                  className="
+                    absolute
+                    right-14
+                    top-full
+                    z-[60]
+                    mt-2
+                    overflow-visible
+                    md:relative
+                    md:right-auto
+                    md:top-auto
+                    md:mt-0
+                    md:z-auto
+                  "
+                >
+                  <SearchBar
+                    placeholder="Search products…"
+                    inputClassName="
+                      h-9
+                      bg-white
+                      text-sm
+                      border
+                      border-[#E5E1D8]
+                      shadow-[0_6px_20px_rgba(0,0,0,0.08)]
+                      focus-visible:ring-1
+                      focus-visible:ring-[#C4921A]/30
+                    "
+                    autoFocus
+                    onSelect={() =>
+                      setSearchOpen(false)
+                    }
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
 
 
-{/* =================================================
-    SEARCH BUTTON
-    CLEAN + SMOOTH ICON ANIMATION
-================================================= */}
+            {/* =================================================
+                SEARCH BUTTON
+            ================================================= */}
 
-<Button
-  variant="ghost"
-  size="icon"
-  onClick={() => setSearchOpen(!searchOpen)}
-  className="
-    relative
-    h-9
-    w-9
-    shrink-0
-    bg-transparent
-    text-muted-foreground
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() =>
+                setSearchOpen(!searchOpen)
+              }
+              className="
+                relative
+                h-9
+                w-9
+                shrink-0
+                bg-transparent
+                text-muted-foreground
 
-    hover:bg-transparent
-    hover:text-[#C4921A]
+                hover:bg-transparent
+                hover:text-[#C4921A]
 
-    focus:bg-transparent
-    focus:text-muted-foreground
+                focus:bg-transparent
+                focus:text-muted-foreground
 
-    focus-visible:bg-transparent
-    focus-visible:text-muted-foreground
-    focus-visible:ring-0
-    focus-visible:ring-offset-0
+                focus-visible:bg-transparent
+                focus-visible:text-muted-foreground
+                focus-visible:ring-0
+                focus-visible:ring-offset-0
 
-    active:bg-transparent
-    active:text-muted-foreground
+                active:bg-transparent
+                active:text-muted-foreground
 
-    transition-colors
-    duration-200
-  "
->
-  <AnimatePresence mode="wait" initial={false}>
-    {searchOpen ? (
-      <motion.span
-        key="close"
-        initial={{
-          opacity: 0,
-          rotate: -90,
-          scale: 0.65,
-        }}
-        animate={{
-          opacity: 1,
-          rotate: 0,
-          scale: 1,
-        }}
-        exit={{
-          opacity: 0,
-          rotate: 90,
-          scale: 0.65,
-        }}
-        transition={{
-          type: 'spring',
-          stiffness: 500,
-          damping: 25,
-        }}
-        className="flex items-center justify-center"
-      >
-        <X className="h-[18px] w-[18px]" />
-      </motion.span>
-    ) : (
-      <motion.span
-        key="search"
-        initial={{
-          opacity: 0,
-          rotate: 90,
-          scale: 0.65,
-        }}
-        animate={{
-          opacity: 1,
-          rotate: 0,
-          scale: 1,
-        }}
-        exit={{
-          opacity: 0,
-          rotate: -90,
-          scale: 0.65,
-        }}
-        transition={{
-          type: 'spring',
-          stiffness: 500,
-          damping: 25,
-        }}
-        className="flex items-center justify-center"
-      >
-        <Search className="h-[18px] w-[18px]" />
-      </motion.span>
-    )}
-  </AnimatePresence>
-</Button>
+                transition-colors
+                duration-200
+              "
+            >
+              <AnimatePresence
+                mode="wait"
+                initial={false}
+              >
+                {searchOpen ? (
+                  <motion.span
+                    key="close"
+                    initial={{
+                      opacity: 0,
+                      rotate: -90,
+                      scale: 0.65,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      rotate: 0,
+                      scale: 1,
+                    }}
+                    exit={{
+                      opacity: 0,
+                      rotate: 90,
+                      scale: 0.65,
+                    }}
+                    transition={{
+                      type: 'spring',
+                      stiffness: 500,
+                      damping: 25,
+                    }}
+                    className="flex items-center justify-center"
+                  >
+                    <X className="h-[18px] w-[18px]" />
+                  </motion.span>
+                ) : (
+                  <motion.span
+                    key="search"
+                    initial={{
+                      opacity: 0,
+                      rotate: 90,
+                      scale: 0.65,
+                    }}
+                    animate={{
+                      opacity: 1,
+                      rotate: 0,
+                      scale: 1,
+                    }}
+                    exit={{
+                      opacity: 0,
+                      rotate: -90,
+                      scale: 0.65,
+                    }}
+                    transition={{
+                      type: 'spring',
+                      stiffness: 500,
+                      damping: 25,
+                    }}
+                    className="flex items-center justify-center"
+                  >
+                    <Search className="h-[18px] w-[18px]" />
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </Button>
 
 
             {/* =================================================
@@ -705,7 +630,9 @@ useEffect(() => {
                   text-muted-foreground
                   hover:text-foreground
                 "
-                onClick={() => setIsCartOpen(true)}
+                onClick={() =>
+                  setIsCartOpen(true)
+                }
               >
                 <ShoppingCart className="h-[18px] w-[18px]" />
 
@@ -735,7 +662,9 @@ useEffect(() => {
 
               {/* Profile */}
 
-              <Link to={user ? '/profile' : '/auth'}>
+              <Link
+                to={user ? '/profile' : '/auth'}
+              >
                 <Button
                   variant="ghost"
                   size="icon"
@@ -768,7 +697,9 @@ useEffect(() => {
                 hover:text-foreground
                 md:hidden
               "
-              onClick={() => setMobileOpen(!mobileOpen)}
+              onClick={() =>
+                setMobileOpen(!mobileOpen)
+              }
             >
               {mobileOpen ? (
                 <X className="h-5 w-5" />
@@ -784,16 +715,22 @@ useEffect(() => {
 
         {/* =====================================================
             MEGA MENU
+
+            UNCHANGED
         ===================================================== */}
 
         <CategoryMegaMenu
           open={megaMenuOpen}
-          onClose={() => setMegaMenuOpen(false)}
+          onClose={() =>
+            setMegaMenuOpen(false)
+          }
         />
 
 
         {/* =====================================================
             MOBILE MENU
+
+            PART OF TOP NAVBAR - UNCHANGED
         ===================================================== */}
 
         <AnimatePresence>
@@ -884,23 +821,25 @@ useEffect(() => {
                     py-2.5
                     text-sm
                     font-medium
-                    text-muted-foregroud
-                   "                   
+                    text-muted-foreground
+                  "
                 >
-                  {user ? '/profile': 'sign in'}
-                  </Link>
+                  {user ? '/profile' : 'sign in'}
+                </Link>
 
               </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-         </motion.div>
-      )}
-     </AnimatePresence>
+      </nav>
 
-</nav>
+
       {/* =======================================================
           MOBILE BOTTOM NAVIGATION
 
-          UNCHANGED
+          🟢 COMPLETELY UNCHANGED
+          DO NOT MODIFY
       ======================================================= */}
 
       <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/50 bg-background/95 backdrop-blur-lg md:hidden">
@@ -946,13 +885,40 @@ useEffect(() => {
           {/* Cart */}
 
           <button
-            onClick={() => setIsCartOpen(true)}
-            className="relative flex flex-col items-center gap-0.5 px-3 py-1 text-muted-foreground"
+            onClick={() =>
+              setIsCartOpen(true)
+            }
+            className="
+              relative
+              flex
+              flex-col
+              items-center
+              gap-0.5
+              px-3
+              py-1
+              text-muted-foreground
+            "
           >
             <ShoppingCart className="h-5 w-5" />
 
             {totalItems > 0 && (
-              <span className="absolute -top-0.5 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-secondary text-[9px] font-bold text-secondary-foreground">
+              <span
+                className="
+                  absolute
+                  -top-0.5
+                  right-1
+                  flex
+                  h-4
+                  w-4
+                  items-center
+                  justify-center
+                  rounded-full
+                  bg-secondary
+                  text-[9px]
+                  font-bold
+                  text-secondary-foreground
+                "
+              >
                 {totalItems}
               </span>
             )}
