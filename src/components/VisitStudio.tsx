@@ -1,5 +1,9 @@
 import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 const EarthScene = lazy(() => import("./EarthScene"));
 
 function getIsMobileViewport() {
@@ -526,6 +530,26 @@ export default function VisitStudio() {
     return () => mediaQuery.removeListener(updateViewport);
   }, []);
 
+  useEffect(() => {
+  const lines = gsap.utils.toArray<HTMLElement>(
+    ".visit-studio-section .line"
+  );
+
+  lines.forEach((line, i) => {
+    gsap.to(line, {
+      y: -30 * (i + 1),
+      scrollTrigger: {
+        trigger: ".visit-studio-section",
+        scrub: true,
+      },
+    });
+  });
+
+  return () => {
+    ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+  };
+}, []);
+
   return (
     <div
       className="
@@ -770,39 +794,75 @@ export default function VisitStudio() {
             </motion.div>
 
             {/* =================================================
-                DESCRIPTION
-               ================================================= */}
+    DESCRIPTION
+   ================================================= */}
 
-            <motion.p
-              custom={4}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{
-                once: true,
-                margin: "-10%",
-              }}
-              variants={fadeUp}
-              className="
-                mt-7
-                max-w-md
-                font-luxury-display
-                text-[15px]
-                leading-[1.8]
-                tracking-[0.01em]
-                text-white/68
-                sm:mt-8
-                sm:text-[16px]
-              "
-              style={{
-                color: "#FFFFFF",
-                textShadow: "0 2px 12px rgba(0,0,0,0.9)",
-              }}
-            >
-              Experience premium beauty services where luxury meets elegance.
-              Every visit is crafted to make you feel confident, refreshed
-              and beautifully cared for by our expert stylists.
-            </motion.p>
+<div className="visit-studio-section mt-7 flex flex-col gap-8 sm:mt-8">
+  <motion.p
+    custom={4}
+    initial="hidden"
+    whileInView="visible"
+    viewport={{
+      once: true,
+      margin: "-10%",
+    }}
+    variants={fadeUp}
+    className="
+      line
+      max-w-md
+      font-luxury-display
+      text-[15px]
+      leading-[1.8]
+      tracking-[0.01em]
+      text-white/68
+      sm:text-[16px]
+    "
+    style={{
+      color: "#FFFFFF",
+      textShadow: "0 2px 12px rgba(0,0,0,0.9)",
+    }}
+  >
+    Experience premium beauty services where luxury meets elegance.
+  </motion.p>
 
+  <motion.p
+    className="
+      line
+      max-w-md
+      font-luxury-display
+      text-[15px]
+      leading-[1.8]
+      tracking-[0.01em]
+      text-white/68
+      sm:text-[16px]
+    "
+    style={{
+      color: "#FFFFFF",
+      textShadow: "0 2px 12px rgba(0,0,0,0.9)",
+    }}
+  >
+    Every visit is crafted to make you feel confident, refreshed
+  </motion.p>
+
+  <motion.p
+    className="
+      line
+      max-w-md
+      font-luxury-display
+      text-[15px]
+      leading-[1.8]
+      tracking-[0.01em]
+      text-white/68
+      sm:text-[16px]
+    "
+    style={{
+      color: "#FFFFFF",
+      textShadow: "0 2px 12px rgba(0,0,0,0.9)",
+    }}
+  >
+    and beautifully cared for by our expert stylists.
+  </motion.p>
+</div>
             {/* =================================================
                 BUTTONS
                ================================================= */}

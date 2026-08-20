@@ -13,6 +13,7 @@ import { useRef, useEffect, useState } from 'react';
 import TopProductCard from '@/components/TopProductCard';
 import VisitStudio from "@/components/VisitStudio";
 import Footer from '@/components/Footer';
+import ScrollDrawText from '@/components/ScrollDrawText';
 
 const trustSignals = [
   { icon: Truck, title: 'Free Shipping', desc: 'On orders above ₹499' },
@@ -650,7 +651,10 @@ const Index = () => {
       <section className="py-16 lg:py-24 bg-muted/20">
         <div className="container mx-auto px-4">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-12 text-center">
-            <h2 className="mb-2 font-display text-3xl font-semibold text-foreground sm:text-4xl"style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700 }}>Shop by Category</h2>
+            <ScrollDrawText
+  text="Shop by Category"
+  className="mb-2 text-foreground"
+/>
             <p className="text-sm text-muted-foreground tracking-wide">Curated collections for every style</p>
           </motion.div>
           <div className="grid gap-6 md:grid-cols-3">
