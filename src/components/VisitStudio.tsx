@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -505,12 +505,110 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
 }
 
 /* ============================================================
+   VISIT STUDIO BOTTOM PARTICLES
+   ============================================================ */
+
+function VisitStudioParticles({ isMobile }: { isMobile: boolean }) {
+  const particlesRef = useRef<HTMLDivElement>(null);
+
+  useLayoutEffect(() => {
+    const container = particlesRef.current;
+
+    if (!container) {
+      return;
+    }
+
+    const ctx = gsap.context(() => {
+      const particles = gsap.utils.toArray<HTMLElement>(".studio-particle");
+
+      particles.forEach((particle) => {
+        const animateParticle = () => {
+          gsap.set(particle, {
+            x: 0,
+            y: 0,
+            opacity: gsap.utils.random(0.2, 0.65),
+            scale: gsap.utils.random(0.6, 1.2),
+          });
+
+          gsap.to(particle, {
+            y: gsap.utils.random(-150, -60),
+            x: gsap.utils.random(-35, 35),
+            opacity: 0,
+            scale: gsap.utils.random(0.3, 0.8),
+
+            duration: gsap.utils.random(3, 6),
+
+            ease: "power1.out",
+
+            onComplete: animateParticle,
+          });
+        };
+
+        gsap.delayedCall(
+          gsap.utils.random(0, 4),
+          animateParticle
+        );
+      });
+    }, container);
+
+    return () => {
+      ctx.revert();
+    };
+  }, []);
+
+  const particleCount = isMobile ? 18 : 32;
+
+  return (
+    <div
+      ref={particlesRef}
+      className="
+        pointer-events-none
+        absolute
+        inset-x-0
+        bottom-0
+        overflow-hidden
+      "
+      style={{
+        height: "38%",
+        zIndex: 1,
+      }}
+    >
+      {Array.from({ length: particleCount }, (_, i) => (
+        <span
+          key={i}
+          className="studio-particle absolute rounded-full"
+          style={{
+            left: `${5 + ((i * 29.7) % 90)}%`,
+            bottom: `${5 + ((i * 17.3) % 25)}%`,
+
+            width: `${i % 5 === 0 ? 3 : 2}px`,
+            height: `${i % 5 === 0 ? 3 : 2}px`,
+
+            background:
+              i % 4 === 0
+                ? "rgba(212,169,78,0.9)"
+                : "rgba(255,255,255,0.7)",
+
+            boxShadow:
+              i % 4 === 0
+                ? "0 0 8px rgba(212,169,78,0.65)"
+                : "0 0 6px rgba(255,255,255,0.4)",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+/* ============================================================
    VISIT STUDIO
    ============================================================ */
 
 export default function VisitStudio() {
   const [isMobile, setIsMobile] = useState(() => getIsMobileViewport());
 
+  const visitStudioTextRef = useRef<HTMLDivElement>(null);
+  
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
@@ -530,23 +628,41 @@ export default function VisitStudio() {
     return () => mediaQuery.removeListener(updateViewport);
   }, []);
 
-  useEffect(() => {
-  const lines = gsap.utils.toArray<HTMLElement>(
-    ".visit-studio-section .line"
-  );
+  useLayoutEffect(() => {
+  const container = visitStudioTextRef.current;
 
-  lines.forEach((line, i) => {
-    gsap.to(line, {
-      y: -30 * (i + 1),
-      scrollTrigger: {
-        trigger: ".visit-studio-section",
-        scrub: true,
-      },
+  if (!container) {
+    return;
+  }
+
+  const ctx = gsap.context(() => {
+    const lines = gsap.utils.toArray<HTMLElement>(".line");
+
+    lines.forEach((line, i) => {
+      gsap.to(line, {
+        y: -30 * (i + 1),
+        ease: "none",
+        force3D: true,
+        overwrite: "auto",
+
+        scrollTrigger: {
+          trigger: container,
+
+          start: "top bottom",
+          end: "bottom top",
+
+          scrub: true,
+
+          invalidateOnRefresh: true,
+        },
+      });
     });
-  });
+
+    ScrollTrigger.refresh();
+  }, container);
 
   return () => {
-    ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+    ctx.revert();
   };
 }, []);
 
@@ -593,6 +709,7 @@ export default function VisitStudio() {
            ===================================================== */}
 
         <GalaxyBackground isMobile={isMobile} />
+        <VisitStudioParticles isMobile={isMobile} />
 
         {/* =====================================================
             VERY SUBTLE TOP TRANSITION
@@ -797,71 +914,97 @@ export default function VisitStudio() {
     DESCRIPTION
    ================================================= */}
 
-<div className="visit-studio-section mt-7 flex flex-col gap-8 sm:mt-8">
-  <motion.p
-    custom={4}
-    initial="hidden"
-    whileInView="visible"
-    viewport={{
-      once: true,
-      margin: "-10%",
-    }}
-    variants={fadeUp}
-    className="
-      line
-      max-w-md
-      font-luxury-display
-      text-[15px]
-      leading-[1.8]
-      tracking-[0.01em]
-      text-white/68
-      sm:text-[16px]
-    "
-    style={{
-      color: "#FFFFFF",
-      textShadow: "0 2px 12px rgba(0,0,0,0.9)",
-    }}
-  >
-    Experience premium beauty services where luxury meets elegance.
-  </motion.p>
+<div
+  ref={visitStudioTextRef}
+  className="
+    visit-studio-section
+    mt-12
+    flex
+    w-full
+    max-w-md
+    flex-col
+    gap-8
+    sm:mt-22
+  "
+>
+  <div className="line" style={{ willChange: "transform" }}>
+    <motion.p
+      custom={4}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{
+        once: true,
+        margin: "-10%",
+      }}
+      variants={fadeUp}
+      className="
+        font-luxury-display
+        text-[15px]
+        leading-[1.8]
+        tracking-[0.01em]
+        text-white/68
+        sm:text-[16px]
+      "
+      style={{
+        color: "#FFFFFF",
+        textShadow: "0 2px 12px rgba(0,0,0,0.9)",
+      }}
+    >
+      Discover beauty, thoughtfully redefined.
+    </motion.p>
+  </div>
 
-  <motion.p
-    className="
-      line
-      max-w-md
-      font-luxury-display
-      text-[15px]
-      leading-[1.8]
-      tracking-[0.01em]
-      text-white/68
-      sm:text-[16px]
-    "
-    style={{
-      color: "#FFFFFF",
-      textShadow: "0 2px 12px rgba(0,0,0,0.9)",
-    }}
-  >
-    Every visit is crafted to make you feel confident, refreshed
-  </motion.p>
+  <div className="line" style={{ willChange: "transform" }}>
+    <motion.p
+      initial="hidden"
+      whileInView="visible"
+      viewport={{
+        once: true,
+        margin: "-10%",
+      }}
+      variants={fadeUp}
+      className="
+        font-luxury-display
+        text-[15px]
+        leading-[1.8]
+        tracking-[0.01em]
+        text-white/68
+        sm:text-[16px]
+      "
+      style={{
+        color: "#FFFFFF",
+        textShadow: "0 2px 12px rgba(0,0,0,0.9)",
+      }}
+    >
+      Personalized care, crafted just for you.
+    </motion.p>
+  </div>
 
-  <motion.p
-    className="
-      line
-      max-w-md
-      font-luxury-display
-      text-[15px]
-      leading-[1.8]
-      tracking-[0.01em]
-      text-white/68
-      sm:text-[16px]
-    "
-    style={{
-      color: "#FFFFFF",
-      textShadow: "0 2px 12px rgba(0,0,0,0.9)",
-    }}
-  >
-    and beautifully cared for by our expert stylists.
-  </motion.p>
+  <div className="line" style={{ willChange: "transform" }}>
+    <motion.p
+      initial="hidden"
+      whileInView="visible"
+      viewport={{
+        once: true,
+        margin: "-10%",
+      }}
+      variants={fadeUp}
+      className="
+        font-luxury-display
+        text-[15px]
+        leading-[1.8]
+        tracking-[0.01em]
+        text-white/68
+        sm:text-[16px]
+      "
+      style={{
+        color: "#FFFFFF",
+        textShadow: "0 2px 12px rgba(0,0,0,0.9)",
+      }}
+    >
+      Leave feeling refreshed, confident, and radiant.
+    </motion.p>
+  </div>
 </div>
             {/* =================================================
                 BUTTONS

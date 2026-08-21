@@ -10,6 +10,7 @@ import categoryWomen from '@/assets/category-women.jpg';
 import categoryMen from '@/assets/category-men.jpg';
 import categoryKids from '@/assets/category-kids.jpg';
 import { useRef, useEffect, useState } from 'react';
+import gsap from 'gsap';
 import TopProductCard from '@/components/TopProductCard';
 import VisitStudio from "@/components/VisitStudio";
 import Footer from '@/components/Footer';
@@ -30,64 +31,67 @@ const categories = [
 
 const services = [
   {
-    number: '01',
-    label: 'Atelier Craft',
-    name: 'Tailoring',
-    desc: 'Expert custom tailoring with precision fitting and premium craftsmanship for all occasions.',
+    number: "01",
+    label: "Atelier Craft",
+    name: "Tailoring",
+    desc: "Expert custom tailoring with precision fitting and premium craftsmanship for all occasions.",
     icon: Scissors,
-    theme: 'light' as const,
-    bg: '#F8F2E7',
-    surface: '#FBF6EC',
-    text: '#2B2420',
-    muted: '#6B5F52',
-    accent: '#B08D57',
-    border: 'rgba(176,141,87,0.28)',
-    glow: 'rgba(214,180,120,0.55)',
+    theme: "light" as const,
+    bg: "#E8D8BE",
+    surface: "#F5ECDE",
+    text: "#2B241D",
+    muted: "#6E6254",
+    accent: "#9A784A",
+    border: "rgba(154,120,74,0.28)",
+    glow: "rgba(201,169,116,0.45)",
   },
+
   {
-    number: '02',
-    label: 'Beauty Studio',
-    name: 'Eyebrow Shaping & Hair Style',
-    desc: 'Professional eyebrow threading, shaping and trendy hairstyling by skilled beauticians.',
+    number: "02",
+    label: "Beauty Studio",
+    name: "Eyebrow Shaping & Hair Style",
+    desc: "Professional eyebrow threading, shaping and trendy hairstyling by skilled beauticians.",
     icon: Sparkles,
-    theme: 'light' as const,
-    bg: '#F6E9E7',
-    surface: '#FAF0EE',
-    text: '#2E2220',
-    muted: '#7A5D5A',
-    accent: '#B9828A',
-    border: 'rgba(185,130,138,0.28)',
-    glow: 'rgba(196,133,140,0.5)',
+    theme: "light" as const,
+    bg: "#E8D1CD",
+    surface: "#F5E7E4",
+    text: "#302422",
+    muted: "#705E5A",
+    accent: "#A77C72",
+    border: "rgba(167,124,114,0.27)",
+    glow: "rgba(199,153,143,0.45)",
   },
+
   {
-    number: '03',
-    label: 'Bridal Editorial',
-    name: 'Saree Kuch (Draping & Styling)',
-    desc: 'Elegant saree draping and styling for weddings, festivals and special celebrations.',
+    number: "03",
+    label: "Bridal Editorial",
+    name: "Saree Kuch (Draping & Styling)",
+    desc: "Elegant saree draping and styling for weddings, festivals and special celebrations.",
     icon: Heart,
-    theme: 'dark' as const,
-    bg: '#2A1017',
-    surface: '#331319',
-    text: '#F3E7E1',
-    muted: '#C9A9A6',
-    accent: '#CBA66B',
-    border: 'rgba(203,166,107,0.3)',
-    glow: 'rgba(122,20,42,0.55)',
+    theme: "light" as const,
+    bg: "#DCD3DF",
+    surface: "#EEE8F0",
+    text: "#29252D",
+    muted: "#68606E",
+    accent: "#88718F",
+    border: "rgba(136,113,143,0.27)",
+    glow: "rgba(170,148,178,0.45)",
   },
+
   {
-    number: '04',
-    label: 'Jewellery Boutique',
-    name: 'Necklaces for Rent',
-    desc: 'Elegant necklaces available for rent to complete your look for weddings, celebrations and special occasions.',
+    number: "04",
+    label: "Jewellery Boutique",
+    name: "Necklaces for Rent",
+    desc: "Elegant necklaces available for rent to complete your look for weddings, celebrations and special occasions.",
     icon: Gem,
-    theme: 'dark' as const,
-    bg: '#0E241C',
-    surface: '#123027',
-    text: '#EAF2EC',
-    muted: '#9FC2B2',
-    accent: '#CDB985',
-    border: 'rgba(205,185,133,0.3)',
-    glow: 'rgba(20,95,72,0.55)',
+    theme: "light" as const,
+    bg: "#D8DDD2",
+    surface: "#EAEDE5",
+    text: "#262923",
+    muted: "#60665B",
+    accent: "#858F70",
+    border: "rgba(133,143,112,0.28)",
+    glow: "rgba(168,179,143,0.45)",
   },
 ];
 
@@ -113,6 +117,7 @@ const Index = () => {
   const [serviceProgress, setServiceProgress] = useState<number[]>([1, 0, 0, 0]);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const servicesRAF = useRef<number | null>(null);
+  const serviceTiltRefs = useRef<Array<HTMLDivElement | null>>([]);
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -182,6 +187,104 @@ const Index = () => {
 
   const activeService = services[activeServiceIndex];
 
+  // ------------------------------------------------------------
+  // SERVICE CARD HOVER TILT
+  // GSAP owns ONLY the outer card wrapper transform. Framer Motion
+  // continues to own the inner card animation (scale / opacity / y / blur).
+  // This prevents the two animation systems from overwriting each other.
+  // ------------------------------------------------------------
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const isTouchDevice = window.matchMedia("(hover: none), (pointer: coarse)").matches;
+    const isSmallScreen = () => window.matchMedia("(max-width: 767px)").matches;
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    // The tilt is intentionally desktop-only. On touch devices there is no
+    // cursor position to calculate, so we leave the cards completely alone.
+    if (isTouchDevice || reduceMotion) return;
+
+    const cards = serviceTiltRefs.current.filter(
+      (card): card is HTMLDivElement => card !== null
+    );
+
+    if (!cards.length) return;
+
+    const cleanups: Array<() => void> = [];
+
+    cards.forEach((card) => {
+      // Make the perspective explicit on the element GSAP is transforming.
+      // This is more reliable than relying only on transformPerspective in
+      // browsers with nested transformed elements.
+      card.style.transformStyle = "preserve-3d";
+      card.style.willChange = "transform";
+
+      gsap.set(card, {
+        rotationX: 0,
+        rotationY: 0,
+        transformPerspective: 800,
+        transformOrigin: "center center",
+        force3D: true,
+      });
+
+      const handlePointerMove = (event: PointerEvent) => {
+        if (event.pointerType !== "mouse") return;
+        if (isSmallScreen()) return;
+
+        const rect = card.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+
+        // 0 at the centre, -0.5 at the left/top, +0.5 at right/bottom.
+        const x = (event.clientX - rect.left) / rect.width - 0.5;
+        const y = (event.clientY - rect.top) / rect.height - 0.5;
+
+        // Keep the movement subtle and premium. The maximum is ±12.5°.
+        const rotationY = x * 25;
+        const rotationX = -y * 25;
+
+        gsap.to(card, {
+          rotationX,
+          rotationY,
+          duration: 0.3,
+          ease: "power2.out",
+          overwrite: "auto",
+          transformPerspective: 800,
+          force3D: true,
+        });
+      };
+
+      const handlePointerLeave = () => {
+        gsap.to(card, {
+          rotationX: 0,
+          rotationY: 0,
+          duration: 0.45,
+          ease: "power3.out",
+          overwrite: "auto",
+          transformPerspective: 800,
+          force3D: true,
+        });
+      };
+
+      card.addEventListener("pointermove", handlePointerMove, { passive: true });
+      card.addEventListener("pointerleave", handlePointerLeave, { passive: true });
+
+      cleanups.push(() => {
+        card.removeEventListener("pointermove", handlePointerMove);
+        card.removeEventListener("pointerleave", handlePointerLeave);
+        gsap.killTweensOf(card);
+        gsap.set(card, {
+          rotationX: 0,
+          rotationY: 0,
+          clearProps: "transform",
+        });
+      });
+    });
+
+    return () => {
+      cleanups.forEach((cleanup) => cleanup());
+    };
+  }, []);
+
   useEffect(() => {
     // Entrance animation for brand strip; respect prefers-reduced-motion
     const reduces = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -247,22 +350,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Trust Signals */}
-      <section className="border-y border-border/50 bg-card">
-        <div className="container mx-auto grid grid-cols-2 gap-4 px-4 py-6 md:grid-cols-4 md:py-8">
-          {trustSignals.map((item, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="flex items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-secondary/10 text-secondary">
-                <item.icon className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-foreground">{item.title}</p>
-                <p className="text-xs text-muted-foreground">{item.desc}</p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
 
       {/* Our Services */}
       <section className="relative overflow-hidden py-12 lg:py-20">
@@ -278,6 +365,7 @@ const Index = () => {
 
           .service-card {
             scroll-snap-stop: always;
+            transform-style: preserve-3d;
           }
 
           @media (prefers-reduced-motion: reduce) {
@@ -511,8 +599,11 @@ const Index = () => {
 
                 return (
                   <div
+                    ref={(el) => {
+                      serviceTiltRefs.current[i] = el;
+                    }}
                     key={service.name}
-                    className="service-card min-w-0"
+                    className="service-card min-w-0 will-change-transform"
                     onMouseEnter={() => {
                       if (!prefersReducedMotion) {
                         setActiveServiceIndex(i);
