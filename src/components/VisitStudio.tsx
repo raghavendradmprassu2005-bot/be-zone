@@ -1,9 +1,19 @@
-import { Suspense, lazy, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+  Suspense,
+  lazy,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { motion } from "framer-motion";
 import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
+
 const EarthScene = lazy(() => import("./EarthScene"));
 
 function getIsMobileViewport() {
@@ -41,13 +51,6 @@ const fadeUp = {
    ============================================================ */
 
 function GalaxyStars({ isMobile }: { isMobile: boolean }) {
-  /*
-   * Deterministic star positions.
-   *
-   * We intentionally avoid Math.random()
-   * so React never produces different layouts.
-   */
-
   const stars = useMemo(
     () =>
       Array.from({ length: 95 }, (_, i) => ({
@@ -69,11 +72,9 @@ function GalaxyStars({ isMobile }: { isMobile: boolean }) {
             ? 0.75
             : 0.25 + ((i * 13) % 45) / 100,
 
-        duration:
-          3.5 + ((i * 29) % 50) / 10,
+        duration: 3.5 + ((i * 29) % 50) / 10,
 
-        delay:
-          -((i * 19) % 40) / 10,
+        delay: -((i * 19) % 40) / 10,
       })),
     []
   );
@@ -106,7 +107,13 @@ function GalaxyStars({ isMobile }: { isMobile: boolean }) {
         } as const;
 
         if (isMobile) {
-          return <span key={star.id} className="absolute rounded-full" style={starStyle} />;
+          return (
+            <span
+              key={star.id}
+              className="absolute rounded-full"
+              style={starStyle}
+            />
+          );
         }
 
         return (
@@ -150,10 +157,6 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
           "radial-gradient(circle at 50% 45%, #11151d 0%, #090b10 42%, #040507 78%, #020204 100%)",
       }}
     >
-      {/* ======================================================
-          DEEP SPACE
-         ====================================================== */}
-
       <div
         className="absolute inset-0"
         style={{
@@ -162,9 +165,7 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
         }}
       />
 
-      {/* ======================================================
-          MAIN GALAXY NEBULA
-         ====================================================== */}
+      {/* MAIN GALAXY NEBULA */}
 
       {isMobile ? (
         <div
@@ -172,10 +173,8 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
           style={{
             width: "125%",
             height: "95%",
-
             left: "-12.5%",
             top: "2.5%",
-
             borderRadius: "50%",
 
             background: `
@@ -190,7 +189,6 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
             `,
 
             filter: "blur(18px)",
-
             transform: "rotate(-18deg)",
             opacity: 0.78,
           }}
@@ -201,10 +199,8 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
           style={{
             width: "125%",
             height: "95%",
-
             left: "-12.5%",
             top: "2.5%",
-
             borderRadius: "50%",
 
             background: `
@@ -219,7 +215,6 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
             `,
 
             filter: "blur(18px)",
-
             transform: "rotate(-18deg)",
           }}
           animate={{
@@ -235,9 +230,7 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
         />
       )}
 
-      {/* ======================================================
-          GALAXY DUST LANE
-         ====================================================== */}
+      {/* GALAXY DUST LANE */}
 
       {isMobile ? (
         <div
@@ -245,10 +238,8 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
           style={{
             width: "135%",
             height: "48%",
-
             left: "-17.5%",
             top: "26%",
-
             borderRadius: "50%",
 
             background: `
@@ -262,7 +253,6 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
             `,
 
             filter: "blur(28px)",
-
             transform: "rotate(-13deg)",
             opacity: 0.58,
           }}
@@ -273,10 +263,8 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
           style={{
             width: "135%",
             height: "48%",
-
             left: "-17.5%",
             top: "26%",
-
             borderRadius: "50%",
 
             background: `
@@ -290,7 +278,6 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
             `,
 
             filter: "blur(28px)",
-
             transform: "rotate(-13deg)",
           }}
           animate={{
@@ -306,9 +293,7 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
         />
       )}
 
-      {/* ======================================================
-          BLUE GALAXY ARM
-         ====================================================== */}
+      {/* BLUE GALAXY ARM */}
 
       {isMobile ? (
         <div
@@ -316,10 +301,8 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
           style={{
             width: "110%",
             height: "42%",
-
             left: "-5%",
             top: "8%",
-
             borderRadius: "50%",
 
             background:
@@ -335,10 +318,8 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
           style={{
             width: "110%",
             height: "42%",
-
             left: "-5%",
             top: "8%",
-
             borderRadius: "50%",
 
             background:
@@ -366,9 +347,7 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
         />
       )}
 
-      {/* ======================================================
-          GOLD AMBIENT CLOUD
-         ====================================================== */}
+      {/* GOLD AMBIENT CLOUD */}
 
       {isMobile ? (
         <div
@@ -376,10 +355,8 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
           style={{
             width: "70%",
             height: "65%",
-
             left: "-12%",
             bottom: "-28%",
-
             borderRadius: "50%",
 
             background:
@@ -395,10 +372,8 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
           style={{
             width: "70%",
             height: "65%",
-
             left: "-12%",
             bottom: "-28%",
-
             borderRadius: "50%",
 
             background:
@@ -418,9 +393,7 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
         />
       )}
 
-      {/* ======================================================
-          DISTANT BLUE CLOUD
-         ====================================================== */}
+      {/* DISTANT BLUE CLOUD */}
 
       {isMobile ? (
         <div
@@ -428,10 +401,8 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
           style={{
             width: "75%",
             height: "60%",
-
             right: "-20%",
             top: "-20%",
-
             borderRadius: "50%",
 
             background:
@@ -447,10 +418,8 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
           style={{
             width: "75%",
             height: "60%",
-
             right: "-20%",
             top: "-20%",
-
             borderRadius: "50%",
 
             background:
@@ -471,15 +440,9 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
         />
       )}
 
-      {/* ======================================================
-          STAR FIELD
-         ====================================================== */}
-
       <GalaxyStars isMobile={isMobile} />
 
-      {/* ======================================================
-          CINEMATIC VIGNETTE
-         ====================================================== */}
+      {/* CINEMATIC VIGNETTE */}
 
       <div
         className="absolute inset-0"
@@ -489,9 +452,7 @@ function GalaxyBackground({ isMobile }: { isMobile: boolean }) {
         }}
       />
 
-      {/* ======================================================
-          CONTENT READABILITY GRADIENT
-         ====================================================== */}
+      {/* CONTENT READABILITY GRADIENT */}
 
       <div
         className="absolute inset-0"
@@ -519,7 +480,8 @@ function VisitStudioParticles({ isMobile }: { isMobile: boolean }) {
     }
 
     const ctx = gsap.context(() => {
-      const particles = gsap.utils.toArray<HTMLElement>(".studio-particle");
+      const particles =
+        gsap.utils.toArray<HTMLElement>(".studio-particle");
 
       particles.forEach((particle) => {
         const animateParticle = () => {
@@ -535,11 +497,8 @@ function VisitStudioParticles({ isMobile }: { isMobile: boolean }) {
             x: gsap.utils.random(-35, 35),
             opacity: 0,
             scale: gsap.utils.random(0.3, 0.8),
-
             duration: gsap.utils.random(3, 6),
-
             ease: "power1.out",
-
             onComplete: animateParticle,
           });
         };
@@ -605,94 +564,181 @@ function VisitStudioParticles({ isMobile }: { isMobile: boolean }) {
    ============================================================ */
 
 export default function VisitStudio() {
-  const [isMobile, setIsMobile] = useState(() => getIsMobileViewport());
+  const [isMobile, setIsMobile] = useState(() =>
+    getIsMobileViewport()
+  );
 
   const visitStudioTextRef = useRef<HTMLDivElement>(null);
-  
+
+  /* ==========================================================
+     MOBILE VIEWPORT
+     ========================================================== */
+
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
 
-    const mediaQuery = window.matchMedia("(max-width: 767px)");
-    const updateViewport = () => setIsMobile(mediaQuery.matches);
+    const mediaQuery = window.matchMedia(
+      "(max-width: 767px)"
+    );
+
+    const updateViewport = () =>
+      setIsMobile(mediaQuery.matches);
 
     updateViewport();
 
-    if (typeof mediaQuery.addEventListener === "function") {
-      mediaQuery.addEventListener("change", updateViewport);
-      return () => mediaQuery.removeEventListener("change", updateViewport);
+    if (
+      typeof mediaQuery.addEventListener === "function"
+    ) {
+      mediaQuery.addEventListener(
+        "change",
+        updateViewport
+      );
+
+      return () =>
+        mediaQuery.removeEventListener(
+          "change",
+          updateViewport
+        );
     }
 
     mediaQuery.addListener(updateViewport);
-    return () => mediaQuery.removeListener(updateViewport);
+
+    return () =>
+      mediaQuery.removeListener(updateViewport);
   }, []);
 
-  useLayoutEffect(() => {
-  const container = visitStudioTextRef.current;
+  /* ==========================================================
+     DESCRIPTION — GSAP / useGSAP
+     ========================================================== */
 
-  if (!container) {
-    return;
-  }
+  useGSAP(
+    () => {
+      const container = visitStudioTextRef.current;
 
-  const ctx = gsap.context(() => {
-    const lines = gsap.utils.toArray<HTMLElement>(".line");
+      if (!container) {
+        return;
+      }
 
-    lines.forEach((line, i) => {
-      gsap.to(line, {
-        y: -30 * (i + 1),
-        ease: "none",
+      const lines =
+        gsap.utils.toArray<HTMLElement>(".description-line");
+
+      if (!lines.length) {
+        return;
+      }
+
+      /*
+       * Premium initial state.
+       *
+       * The text starts slightly lower, soft and transparent.
+       * GSAP then brings it into focus naturally.
+       */
+      gsap.set(lines, {
+        opacity: 0,
+        y: 22,
+        filter: "blur(5px)",
         force3D: true,
-        overwrite: "auto",
+      });
+
+      /*
+       * Main description reveal.
+       *
+       * The lines appear almost together rather than
+       * feeling like three separate animations.
+       */
+      gsap.to(lines, {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)",
+        duration: 1.05,
+        stagger: 0.13,
+        ease: "power3.out",
 
         scrollTrigger: {
           trigger: container,
-
-          start: "top bottom",
-          end: "bottom top",
-
-          scrub: true,
-
+          start: "top 82%",
+          once: true,
           invalidateOnRefresh: true,
         },
       });
-    });
 
-    ScrollTrigger.refresh();
-  }, container);
+      /*
+       * Very subtle movement while scrolling.
+       *
+       * This gives the description a premium cinematic
+       * feeling without making the text jump or drift.
+       */
+      lines.forEach((line, index) => {
+        gsap.to(line, {
+          y: -18 * (index + 1),
+          ease: "none",
+          force3D: true,
+          overwrite: "auto",
 
-  return () => {
-    ctx.revert();
-  };
-}, []);
+          scrollTrigger: {
+            trigger: container,
+            start: "top bottom",
+            end: "bottom top",
+            scrub: 0.8,
+            invalidateOnRefresh: true,
+          },
+        });
+      });
+
+      /*
+       * TWA / Android-safe refresh.
+       *
+       * The page can still be calculating EarthScene,
+       * fonts and mobile dimensions when this component
+       * first mounts.
+       */
+      requestAnimationFrame(() => {
+        ScrollTrigger.refresh();
+      });
+
+      const refreshTimer = window.setTimeout(() => {
+        ScrollTrigger.refresh();
+      }, 500);
+
+      return () => {
+        window.clearTimeout(refreshTimer);
+      };
+    },
+    {
+      scope: visitStudioTextRef,
+      dependencies: [isMobile],
+      revertOnUpdate: true,
+    }
+  );
 
   return (
     <div
       className="
-    relative
-    w-full
-    min-h-[540px]
-    mb-0
-    pb-0
-    overflow-hidden
-    bg-[#020204]
-    lg:min-h-[100svh]
-    lg:h-screen
-  "
+        relative
+        w-full
+        min-h-[540px]
+        mb-0
+        pb-0
+        overflow-hidden
+        bg-[#020204]
+        lg:min-h-[100svh]
+        lg:h-screen
+      "
     >
       <motion.section
         className="
-  relative
-  z-10
-  w-full
-  h-auto
-  min-h-[540px]
-  mb-0
-  pb-0
-  overflow-hidden
-  lg:h-full
-  lg:min-h-[680px]
-"
+          relative
+          z-10
+          w-full
+          h-auto
+          min-h-[540px]
+          mb-0
+          pb-0
+          overflow-hidden
+          lg:h-full
+          lg:min-h-[680px]
+        "
         style={
           isMobile
             ? {
@@ -709,6 +755,7 @@ export default function VisitStudio() {
            ===================================================== */}
 
         <GalaxyBackground isMobile={isMobile} />
+
         <VisitStudioParticles isMobile={isMobile} />
 
         {/* =====================================================
@@ -716,7 +763,14 @@ export default function VisitStudio() {
            ===================================================== */}
 
         <div
-          className="pointer-events-none absolute inset-x-0 top-0 h-40 sm:h-56"
+          className="
+            pointer-events-none
+            absolute
+            inset-x-0
+            top-0
+            h-40
+            sm:h-56
+          "
           style={{
             zIndex: 1,
 
@@ -845,15 +899,15 @@ export default function VisitStudio() {
               }}
               variants={fadeUp}
               className="
-  mt-3
-  font-luxury-display
-  text-[22px]
-  italic
-  tracking-[0.02em]
-  text-luxury-gold
-  sm:text-[22px]
-  lg:text-[24px]
-"
+                mt-3
+                font-luxury-display
+                text-[22px]
+                italic
+                tracking-[0.02em]
+                text-luxury-gold
+                sm:text-[22px]
+                lg:text-[24px]
+              "
               style={{
                 textShadow:
                   "0 0 18px rgba(212,169,78,0.18)",
@@ -891,8 +945,7 @@ export default function VisitStudio() {
                 background:
                   "linear-gradient(135deg, rgba(255,255,255,0.085), rgba(255,255,255,0.035))",
 
-                backdropFilter:
-                  "blur(18px)",
+                backdropFilter: "blur(18px)",
 
                 WebkitBackdropFilter:
                   "blur(18px)",
@@ -901,111 +954,124 @@ export default function VisitStudio() {
                   "inset 0 1px 0 rgba(255,255,255,0.14), 0 10px 40px rgba(0,0,0,0.32)",
               }}
             >
-              <p className="font-luxury-sans text-[11px] uppercase tracking-[0.3em] text-white/70">
+              <p
+                className="
+                  font-luxury-sans
+                  text-[11px]
+                  uppercase
+                  tracking-[0.3em]
+                  text-white/70
+                "
+              >
                 Near Govt Hospital
               </p>
 
-              <p className="mt-2 font-body text-sm leading-6 text-white/60">
+              <p
+                className="
+                  mt-2
+                  font-body
+                  text-sm
+                  leading-6
+                  text-white/60
+                "
+              >
                 Basavapatna, Davanagere, Karnataka
               </p>
             </motion.div>
 
             {/* =================================================
-    DESCRIPTION
-   ================================================= */}
+                DESCRIPTION
+               ================================================= */}
 
-<div
-  ref={visitStudioTextRef}
-  className="
-    visit-studio-section
-    mt-12
-    flex
-    w-full
-    max-w-md
-    flex-col
-    gap-8
-    sm:mt-22
-  "
->
-  <div className="line" style={{ willChange: "transform" }}>
-    <motion.p
-      custom={4}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{
-        once: true,
-        margin: "-10%",
-      }}
-      variants={fadeUp}
-      className="
-        font-luxury-display
-        text-[15px]
-        leading-[1.8]
-        tracking-[0.01em]
-        text-white/68
-        sm:text-[16px]
-      "
-      style={{
-        color: "#FFFFFF",
-        textShadow: "0 2px 12px rgba(0,0,0,0.9)",
-      }}
-    >
-      Discover beauty, thoughtfully redefined.
-    </motion.p>
-  </div>
+            <div
+              ref={visitStudioTextRef}
+              className="
+                visit-studio-section
+                mt-12
+                flex
+                w-full
+                max-w-md
+                flex-col
+                gap-8
+                sm:mt-14
+              "
+            >
+              <div
+                className="
+                  description-line
+                  line
+                  will-change-transform
+                "
+              >
+                <p
+                  className="
+                    font-body
+                    text-[15px]
+                    leading-[1.8]
+                    tracking-[0.01em]
+                    text-white
+                    sm:text-[16px]
+                  "
+                  style={{
+                    textShadow:
+                      "0 2px 12px rgba(0,0,0,0.9)",
+                  }}
+                >
+                  Discover beauty, thoughtfully redefined.
+                </p>
+              </div>
 
-  <div className="line" style={{ willChange: "transform" }}>
-    <motion.p
-      initial="hidden"
-      whileInView="visible"
-      viewport={{
-        once: true,
-        margin: "-10%",
-      }}
-      variants={fadeUp}
-      className="
-        font-luxury-display
-        text-[15px]
-        leading-[1.8]
-        tracking-[0.01em]
-        text-white/68
-        sm:text-[16px]
-      "
-      style={{
-        color: "#FFFFFF",
-        textShadow: "0 2px 12px rgba(0,0,0,0.9)",
-      }}
-    >
-      Personalized care, crafted just for you.
-    </motion.p>
-  </div>
+              <div
+                className="
+                  description-line
+                  line
+                  will-change-transform
+                "
+              >
+                <p
+                  className="
+                    font-body
+                    text-[15px]
+                    leading-[1.8]
+                    tracking-[0.01em]
+                    text-white
+                    sm:text-[16px]
+                  "
+                  style={{
+                    textShadow:
+                      "0 2px 12px rgba(0,0,0,0.9)",
+                  }}
+                >
+                  Personalized care, crafted just for you.
+                </p>
+              </div>
 
-  <div className="line" style={{ willChange: "transform" }}>
-    <motion.p
-      initial="hidden"
-      whileInView="visible"
-      viewport={{
-        once: true,
-        margin: "-10%",
-      }}
-      variants={fadeUp}
-      className="
-        font-luxury-display
-        text-[15px]
-        leading-[1.8]
-        tracking-[0.01em]
-        text-white/68
-        sm:text-[16px]
-      "
-      style={{
-        color: "#FFFFFF",
-        textShadow: "0 2px 12px rgba(0,0,0,0.9)",
-      }}
-    >
-      Leave feeling refreshed, confident, and radiant.
-    </motion.p>
-  </div>
-</div>
+              <div
+                className="
+                  description-line
+                  line
+                  will-change-transform
+                "
+              >
+                <p
+                  className="
+                    font-body
+                    text-[15px]
+                    leading-[1.8]
+                    tracking-[0.01em]
+                    text-white
+                    sm:text-[16px]
+                  "
+                  style={{
+                    textShadow:
+                      "0 2px 12px rgba(0,0,0,0.9)",
+                  }}
+                >
+                  Leave feeling refreshed, confident, and radiant.
+                </p>
+              </div>
+            </div>
+
             {/* =================================================
                 BUTTONS
                ================================================= */}
@@ -1036,7 +1102,7 @@ export default function VisitStudio() {
               {/* =================================================
                   CONTACT BUTTON
                  ================================================= */}
- 
+
               <motion.button
                 whileHover={{
                   y: -1,
@@ -1070,13 +1136,21 @@ export default function VisitStudio() {
                 style={{
                   background:
                     "linear-gradient(135deg, #f3d98b 0%, #d4a94e 50%, #b8863a 100%)",
-  
+
                   boxShadow:
                     "0 4px 25px rgba(212,169,78,0.32)",
                 }}
               >
                 {isMobile ? (
-                  <span className="pointer-events-none absolute inset-0 rounded-full bg-[linear-gradient(120deg,rgba(255,255,255,0.16),transparent_40%,rgba(255,255,255,0.06))]" />
+                  <span
+                    className="
+                      pointer-events-none
+                      absolute
+                      inset-0
+                      rounded-full
+                      bg-[linear-gradient(120deg,rgba(255,255,255,0.16),transparent_40%,rgba(255,255,255,0.06))]
+                    "
+                  />
                 ) : (
                   <motion.span
                     className="
@@ -1090,10 +1164,7 @@ export default function VisitStudio() {
                       blur-md
                     "
                     animate={{
-                      left: [
-                        "-50%",
-                        "150%",
-                      ],
+                      left: ["-50%", "150%"],
                     }}
                     transition={{
                       duration: 3.8,
@@ -1103,81 +1174,87 @@ export default function VisitStudio() {
                     }}
                   />
                 )}
-  
-                <a
-  href="https://wa.me/917619305964?text=Hi,%20I%20want%20to%20know%20more%20about%20your%20beauty%20services/products"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="group"
->
-  <span className="relative z-10 flex items-center justify-center gap-2">
-    Contact Us
 
-    <span
-      className="
-        inline-block
-        transition-transform
-        duration-300
-        group-hover:translate-x-1
-      "
-    >
-      →
-    </span>
-  </span>
-</a>
+                <a
+                  href="https://wa.me/917619305964?text=Hi,%20I%20want%20to%20know%20more%20about%20your%20beauty%20services/products"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group"
+                >
+                  <span className="relative z-10 flex items-center justify-center gap-2">
+                    Contact Us
+
+                    <span
+                      className="
+                        inline-block
+                        transition-transform
+                        duration-300
+                        group-hover:translate-x-1
+                      "
+                    >
+                      →
+                    </span>
+                  </span>
+                </a>
               </motion.button>
- 
+
               {/* =================================================
                   DIRECTIONS
                  ================================================= */}
- 
+
               <a
-  href="https://maps.app.goo.gl/XTh2zrsuTndPabPt9?g_st=ac"
-  target="_blank"
-  rel="noopener noreferrer"
->
-  <motion.button
-    whileHover={{
-      y: -1,
-      scale: 1.01,
-    }}
-    whileTap={{
-      scale: 0.98,
-    }}
-    transition={{
-      type: "spring",
-      stiffness: 360,
-      damping: 26,
-    }}
-    className="
-      w-full
-      rounded-full
-      border
-      border-white/20
-      px-8
-      py-3.5
-      font-luxury-sans
-      text-[11px]
-      uppercase
-      tracking-[0.3em]
-      font-semibold
-      text-white
-      transition-all
-      duration-300
-      hover:border-white/40
-      sm:w-auto
-      sm:py-3
-    "
-    style={{
-      background: "rgba(255,255,255,0.055)",
-      backdropFilter: "blur(14px)",
-      WebkitBackdropFilter: "blur(14px)",
-      boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08)",
-    }}
-  >
-    Get Directions
-  </motion.button>
-</a>
+                href="https://maps.app.goo.gl/XTh2zrsuTndPabPt9?g_st=ac"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <motion.button
+                  whileHover={{
+                    y: -1,
+                    scale: 1.01,
+                  }}
+                  whileTap={{
+                    scale: 0.98,
+                  }}
+                  transition={{
+                    type: "spring",
+                    stiffness: 360,
+                    damping: 26,
+                  }}
+                  className="
+                    w-full
+                    rounded-full
+                    border
+                    border-white/20
+                    px-8
+                    py-3.5
+                    font-luxury-sans
+                    text-[11px]
+                    uppercase
+                    tracking-[0.3em]
+                    font-semibold
+                    text-white
+                    transition-all
+                    duration-300
+                    hover:border-white/40
+                    sm:w-auto
+                    sm:py-3
+                  "
+                  style={{
+                    background:
+                      "rgba(255,255,255,0.055)",
+
+                    backdropFilter: "blur(14px)",
+
+                    WebkitBackdropFilter:
+                      "blur(14px)",
+
+                    boxShadow:
+                      "inset 0 1px 0 rgba(255,255,255,0.08)",
+                  }}
+                >
+                  Get Directions
+                </motion.button>
+              </a>
             </motion.div>
           </div>
         </div>

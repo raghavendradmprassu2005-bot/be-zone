@@ -47,6 +47,18 @@ const App = () => (
               <Sonner />
               <BrowserRouter>
                 <ScrollToTop />
+                <div
+  className="pointer-events-none fixed left-0 right-0 z-40 h-7"
+  style={{
+    top: "0px",
+    backdropFilter: "blur(1.5px)",
+    WebkitBackdropFilter: "blur(1.5px)",
+    maskImage:
+      "linear-gradient(to bottom, black 0%, rgba(0,0,0,0.6) 40%, transparent 100%)",
+    WebkitMaskImage:
+      "linear-gradient(to bottom, black 0%, rgba(0,0,0,0.6) 40%, transparent 100%)",
+  }}
+/>
                 <Navbar />
                 <CartDrawer />
                 <ExitIntentPopup />
