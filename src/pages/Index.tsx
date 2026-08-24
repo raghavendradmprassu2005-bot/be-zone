@@ -14,6 +14,7 @@ import gsap from 'gsap';
 import TopProductCard from '@/components/TopProductCard';
 import VisitStudio from "@/components/VisitStudio";
 import Footer from '@/components/Footer';
+import { useLayoutEffect } from "react";
 
 const trustSignals = [
   { icon: Truck, title: 'Free Shipping', desc: 'On orders above ₹499' },
@@ -1024,57 +1025,436 @@ useEffect(() => {
     
   }, []);
 
+  const heroRef = useRef<HTMLElement | null>(null);
+const heroVideoRef = useRef<HTMLVideoElement | null>(null);
+const heroContentRef = useRef<HTMLDivElement | null>(null);
+
+useLayoutEffect(() => {
+  const hero = heroRef.current;
+  const video = heroVideoRef.current;
+  const content = heroContentRef.current;
+
+  if (!hero || !video || !content) return;
+
+  const mediaQuery = window.matchMedia("(min-width: 1024px)");
+  const reducedMotion = window.matchMedia(
+    "(prefers-reduced-motion: reduce)"
+  );
+
+  if (!mediaQuery.matches || reducedMotion.matches) return;
+
+  const ctx = gsap.context(() => {
+    /*
+     * Stronger cinematic depth:
+     * The video is oversized so the 190px movement can never reveal
+     * an empty edge of the source video.
+     */
+    gsap.set(video, {
+      scale: 1.20,
+      y: 0,
+      transformOrigin: "center center",
+      force3D: true,
+      willChange: "transform",
+    });
+
+    /*
+     * Foreground content sits on a separate visual plane.
+     */
+    gsap.set(content, {
+      y: 0,
+      force3D: true,
+      willChange: "transform",
+    });
+
+    /*
+     * Smooth GSAP interpolation.
+     */
+    const moveVideo = gsap.quickTo(video, "y", {
+      duration: 0.28,
+      ease: "power3.out",
+    });
+
+    const moveContent = gsap.quickTo(content, "y", {
+      duration: 0.24,
+      ease: "power3.out",
+    });
+
+    let raf = 0;
+
+    const updateParallax = () => {
+      raf = 0;
+
+      const rect = hero.getBoundingClientRect();
+      const height = Math.max(hero.offsetHeight, 1);
+
+      /*
+       * 0 = hero is at its starting position.
+       * 1 = hero has completely travelled through the viewport.
+       */
+      const progress = gsap.utils.clamp(
+        0,
+        1,
+        -rect.top / height
+      );
+
+      /*
+       * BACKGROUND PLANE
+       *
+       * 190px total movement.
+       * This is the dominant depth layer.
+       */
+      moveVideo(progress * 190);
+
+      /*
+       * FOREGROUND PLANE
+       *
+       * Moves in the opposite direction.
+       * This creates separation between the typography
+       * and the jewellery/video.
+       */
+      moveContent(progress * -60);
+    };
+
+    const requestParallaxUpdate = () => {
+      if (!raf) {
+        raf = window.requestAnimationFrame(updateParallax);
+      }
+    };
+
+    const handleResize = () => {
+      requestParallaxUpdate();
+    };
+
+    window.addEventListener(
+      "scroll",
+      requestParallaxUpdate,
+      { passive: true }
+    );
+
+    window.addEventListener(
+      "resize",
+      handleResize,
+      { passive: true }
+    );
+
+    /*
+     * Correct position immediately if the browser restores
+     * the page at a previous scroll position.
+     */
+    updateParallax();
+
+    return () => {
+      window.removeEventListener(
+        "scroll",
+        requestParallaxUpdate
+      );
+
+      window.removeEventListener(
+        "resize",
+        handleResize
+      );
+
+      if (raf) {
+        window.cancelAnimationFrame(raf);
+      }
+
+      gsap.killTweensOf(video);
+      gsap.killTweensOf(content);
+
+      gsap.set(video, {
+        clearProps: "transform,willChange",
+      });
+
+      gsap.set(content, {
+        clearProps: "transform,willChange",
+      });
+    };
+  }, hero);
+
+  return () => ctx.revert();
+}, []);
+
   return (
     <div className="min-h-screen pb-0" style={{ fontFamily: "'Artifika', serif" }}>
 
       {/* Brand announcement strip (between header and hero) */}
-      <section className={`brand-strip ${brandStripClass}`} role="region" aria-label="Bhoomika Beauty Parlour announcement">
-        <div className="brand-strip-inner container mx-auto px-4">
-          <span className="ornament hidden sm:inline">✦</span>
-          <div className="title-wrap">
-            <span className="title font-display">BHOOMIKA BEAUTY PARLOUR</span>
+<section
+  className={`brand-strip ${brandStripClass}`}
+  role="region"
+  aria-label="Bhoomika Beauty Parlour announcement"
+>
+  <div className="brand-strip-inner container mx-auto px-4">
+    <span className="ornament hidden sm:inline">✦</span>
 
-          </div>
-          <span className="ornament hidden sm:inline">✦</span>
-          <span className="sparkle left" aria-hidden="true"></span>
-          <span className="sparkle right" aria-hidden="true"></span>
-        </div>
-      </section>
+    <div className="title-wrap">
+      <span className="title font-display">BHOOMIKA BEAUTY PARLOUR</span>
+    </div>
 
-      {/* Hero */}
-      <section className="relative flex min-h-[80vh] items-center overflow-hidden pt-16">
-        <div className="absolute inset-0">
-          <img src={heroImage} alt="Be-Zone luxury beauty collection" className="h-full w-full object-cover" width={1920} height={1080} />
-          <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 via-foreground/50 to-transparent" />
-          <div className="absolute inset-0 bg-gradient-to-t from-foreground/40 via-transparent to-transparent" />
-        </div>
-        <div className="container relative z-10 mx-auto px-4">
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="max-w-xl">
-            <span className="mb-4 inline-block rounded-full border border-secondary/30 bg-secondary/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-secondary backdrop-blur-sm">
-              New Collection 2026
-            </span>
-            <h1 className="mb-3 font-display text-5xl font-semibold leading-[1.05] text-primary-foreground sm:text-6xl lg:text-7xl" style={{ fontFamily: "'Cormorant Garamond', serif", fontWeight: 700 }}>
-              Discover Your
-              <span className="block text-glow">Perfect Style</span>
-            </h1>
-            <p className="animate-glow-fade mb-2 font-display text-xl italic text-primary-foreground/70" style={{ animationDelay: '0.3s' }}>
-              ನಿಮ್ಮ ಪರಿಪೂರ್ಣ ಶೈಲಿಯನ್ನು ಅನ್ವೇಷಿಸಿ
-            </p>
-            <p className="font-body mb-8 max-w-md text-base leading-relaxed text-primary-foreground/70">
-              Curated collection of premium beauty, skincare, makeup & fashion — all at unbeatable prices.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Button asChild size="lg" className="gradient-nebula px-8 text-foreground shadow-lg transition-all hover:shadow-xl hover:scale-[1.02]">
-                <Link to="/products">Shop Now <ArrowRight className="ml-2 h-4 w-4" /></Link>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="border-primary-foreground/30 bg-transparent text-primary-foreground backdrop-blur-sm hover:bg-primary-foreground/10">
-                <Link to="/zodiac">Explore Collections</Link>
-              </Button>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+    <span className="ornament hidden sm:inline">✦</span>
 
+    <span className="sparkle left" aria-hidden="true"></span>
+    <span className="sparkle right" aria-hidden="true"></span>
+  </div>
+</section>
+
+{/* Hero */}
+<section
+  ref={heroRef}
+  className="
+    relative flex
+    min-h-[88svh]
+    items-center
+    overflow-hidden
+    pt-20
+    pb-8
+    md:min-h-[80vh]
+    md:pt-16
+    md:pb-0
+    lg:h-[88vh]
+    lg:min-h-0
+  "
+>
+  <div className="absolute inset-0 overflow-hidden">
+    {/* Desktop Hero Video */}
+    <video
+      ref={heroVideoRef}
+      className="hidden h-full w-full object-cover md:block"
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="metadata"
+      poster={heroImage}
+      aria-hidden="true"
+    >
+      <source
+        src="/videos/be-zone-hero-desktop.mp4"
+        type="video/mp4"
+      />
+    </video>
+
+    {/* Mobile Hero Video */}
+    <video
+      className="
+        block
+        h-full
+        w-full
+        object-cover
+        md:hidden
+      "
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="metadata"
+      poster={heroImage}
+      aria-hidden="true"
+    >
+      <source
+        src="/videos/be-zone-hero-mobile.mp4"
+        type="video/mp4"
+      />
+    </video>
+
+    {/* Cinematic overlay */}
+    <div className="absolute inset-0 bg-gradient-to-r from-foreground/80 via-foreground/50 to-transparent" />
+
+    <div className="absolute inset-0 bg-gradient-to-t from-foreground/40 via-transparent to-transparent" />
+  </div>
+
+  {/* Hero Content */}
+  <div
+    ref={heroContentRef}
+    className="
+      container
+      relative
+      z-10
+      mx-auto
+      w-full
+      px-5
+      md:px-4
+    "
+  >
+    <motion.div
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        duration: 0.8,
+        ease: [0.22, 1, 0.36, 1],
+      }}
+      className="
+        max-w-[92%]
+        md:max-w-xl
+      "
+    >
+      {/* Campaign label */}
+      <span
+        className="
+          mb-5
+          inline-flex
+          items-center
+          gap-2
+          rounded-full
+          border
+          border-secondary/30
+          bg-secondary/10
+          px-4
+          py-1.5
+          text-xs
+          font-semibold
+          uppercase
+          tracking-[0.2em]
+          text-secondary
+          backdrop-blur-sm
+          md:mb-5
+        "
+      >
+        <span aria-hidden="true">✦</span>
+        New Collection 2026
+      </span>
+
+      {/* Main headline */}
+      <h1
+        className="
+          mb-4
+          font-display
+          text-[2.85rem]
+          font-semibold
+          leading-[0.98]
+          tracking-[-0.02em]
+          text-primary-foreground
+          sm:text-6xl
+          lg:text-7xl
+          md:mb-3
+        "
+        style={{
+          fontFamily: "'Cormorant Garamond', serif",
+          fontWeight: 700,
+        }}
+      >
+        Discover Your
+        <span className="block text-glow">Perfect Style</span>
+      </h1>
+
+      {/* Kannada brand statement */}
+      <p
+        className="
+          animate-glow-fade
+          mb-4
+          font-display
+          text-lg
+          italic
+          leading-relaxed
+          text-primary-foreground/75
+          sm:text-xl
+          md:mb-3
+        "
+        style={{ animationDelay: "0.3s" }}
+      >
+        ನಿಮ್ಮ ಪರಿಪೂರ್ಣ ಶೈಲಿಯನ್ನು ಅನ್ವೇಷಿಸಿ
+      </p>
+
+      {/* Category line */}
+      <p
+        className="
+          mb-4
+          text-[9px]
+          font-semibold
+          uppercase
+          tracking-[0.2em]
+          text-secondary/90
+          sm:text-xs
+          md:mb-3
+          md:tracking-[0.25em]
+        "
+      >
+        Beauty&nbsp;&nbsp;·&nbsp;&nbsp;Jewellery&nbsp;&nbsp;·&nbsp;&nbsp;Fashion&nbsp;&nbsp;·&nbsp;&nbsp;Self Care
+      </p>
+
+      {/* Supporting copy */}
+      <p
+        className="
+          font-body
+          mb-7
+          max-w-[340px]
+          text-[15px]
+          leading-[1.6]
+          text-primary-foreground/65
+          sm:text-base
+          md:mb-8
+          md:max-w-md
+        "
+      >
+        Curated collection of premium beauty, skincare, makeup & fashion —
+        all at unbeatable prices.
+      </p>
+
+      {/* CTAs */}
+      <div
+        className="
+          flex
+          w-full
+          flex-col
+          gap-3
+          sm:flex-row
+          md:flex-wrap
+        "
+      >
+        <Button
+          asChild
+          size="lg"
+          className="
+            gradient-nebula
+            h-12
+            w-full
+            px-8
+            text-foreground
+            shadow-lg
+            transition-all
+            duration-300
+            hover:scale-[1.02]
+            hover:shadow-xl
+            sm:w-auto
+          "
+        >
+          <Link to="/products">
+            Shop Now
+            <ArrowRight className="ml-2 h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+          </Link>
+        </Button>
+
+        <Button
+          asChild
+          size="lg"
+          variant="outline"
+          className="
+            h-12
+            w-full
+            border-primary-foreground/30
+            bg-transparent
+            text-primary-foreground
+            backdrop-blur-sm
+            transition-all
+            duration-300
+            hover:bg-primary-foreground/10
+            sm:w-auto
+          "
+        >
+          <Link to="/zodiac">Explore Collections</Link>
+        </Button>
+      </div>
+    </motion.div>
+  </div>
+
+  {/* Minimal scroll cue — desktop only */}
+  <div className="pointer-events-none absolute bottom-7 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-2 text-primary-foreground/50 lg:flex">
+    <span className="text-[9px] font-semibold uppercase tracking-[0.3em]">
+      Scroll to discover
+    </span>
+
+    <span className="h-8 w-px bg-primary-foreground/30" />
+  </div>
+</section>
 
       {/* Our Services */}
 <section className="relative overflow-hidden pt-5 pb-9 sm:pt-6 sm:pb-10 lg:pt-7 lg:pb-12">
