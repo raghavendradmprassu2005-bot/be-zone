@@ -1036,94 +1036,130 @@ useLayoutEffect(() => {
 
   if (!hero || !video || !content) return;
 
-  const mediaQuery = window.matchMedia("(min-width: 1024px)");
-  const reducedMotion = window.matchMedia(
+  const desktopQuery = window.matchMedia("(min-width: 1024px)");
+  const reducedMotionQuery = window.matchMedia(
     "(prefers-reduced-motion: reduce)"
   );
 
-  if (!mediaQuery.matches || reducedMotion.matches) return;
+  // Desktop parallax only.
+  // Mobile remains exactly as designed.
+  if (
+    !desktopQuery.matches ||
+    reducedMotionQuery.matches
+  ) {
+    return;
+  }
 
   const ctx = gsap.context(() => {
-    /*
-     * Stronger cinematic depth:
-     * The video is oversized so the 190px movement can never reveal
-     * an empty edge of the source video.
-     */
+    // -------------------------------------------------------
+    // INITIAL STATE
+    // -------------------------------------------------------
+
     gsap.set(video, {
-      scale: 1.20,
+      scale: 1.2,
       y: 0,
       transformOrigin: "center center",
       force3D: true,
       willChange: "transform",
     });
 
-    /*
-     * Foreground content sits on a separate visual plane.
-     */
     gsap.set(content, {
       y: 0,
       force3D: true,
       willChange: "transform",
     });
 
-    /*
-     * Smooth GSAP interpolation.
-     */
+    // -------------------------------------------------------
+    // SMOOTH PARALLAX CONTROLLERS
+    // -------------------------------------------------------
+
     const moveVideo = gsap.quickTo(video, "y", {
-      duration: 0.28,
+      duration: 0.35,
       ease: "power3.out",
     });
 
     const moveContent = gsap.quickTo(content, "y", {
-      duration: 0.24,
+      duration: 0.3,
       ease: "power3.out",
     });
 
     let raf = 0;
 
+    // -------------------------------------------------------
+    // UPDATE PARALLAX
+    // -------------------------------------------------------
+
     const updateParallax = () => {
       raf = 0;
 
+      if (!hero || !video || !content) return;
+
       const rect = hero.getBoundingClientRect();
-      const height = Math.max(hero.offsetHeight, 1);
+      const height = Math.max(
+        hero.offsetHeight,
+        1
+      );
 
       /*
-       * 0 = hero is at its starting position.
-       * 1 = hero has completely travelled through the viewport.
+       * Only animate while the hero is near the viewport.
+       * This prevents unnecessary calculations lower on
+       * the page.
        */
+
+      const viewportHeight =
+        window.innerHeight;
+
+      if (
+        rect.bottom < -100 ||
+        rect.top > viewportHeight + 100
+      ) {
+        return;
+      }
+
+      /*
+       * Convert hero position into normalized progress.
+       *
+       * At the beginning:
+       * progress = 0
+       *
+       * As the hero scrolls:
+       * progress approaches 1
+       */
+
       const progress = gsap.utils.clamp(
         0,
         1,
         -rect.top / height
       );
 
-      /*
-       * BACKGROUND PLANE
-       *
-       * 190px total movement.
-       * This is the dominant depth layer.
-       */
+      // -----------------------------------------------------
+      // BACKGROUND VIDEO
+      // -----------------------------------------------------
+
       moveVideo(progress * 190);
 
-      /*
-       * FOREGROUND PLANE
-       *
-       * Moves in the opposite direction.
-       * This creates separation between the typography
-       * and the jewellery/video.
-       */
+      // -----------------------------------------------------
+      // FOREGROUND CONTENT
+      // -----------------------------------------------------
+
       moveContent(progress * -60);
     };
 
+    // -------------------------------------------------------
+    // RAF SCROLL HANDLER
+    // -------------------------------------------------------
+
     const requestParallaxUpdate = () => {
-      if (!raf) {
-        raf = window.requestAnimationFrame(updateParallax);
-      }
+      if (raf) return;
+
+      raf = window.requestAnimationFrame(
+        updateParallax
+      );
     };
 
-    const handleResize = () => {
-      requestParallaxUpdate();
-    };
+    // -------------------------------------------------------
+    // SCROLL
+    // -------------------------------------------------------
 
     window.addEventListener(
       "scroll",
@@ -1131,17 +1167,47 @@ useLayoutEffect(() => {
       { passive: true }
     );
 
+    // -------------------------------------------------------
+    // RESIZE
+    // -------------------------------------------------------
+
     window.addEventListener(
       "resize",
-      handleResize,
+      requestParallaxUpdate,
       { passive: true }
     );
 
-    /*
-     * Correct position immediately if the browser restores
-     * the page at a previous scroll position.
-     */
-    updateParallax();
+    // -------------------------------------------------------
+    // VIDEO LOAD
+    //
+    // Important for production/live deployment.
+    // Once the video metadata is ready, recalculate the
+    // hero position.
+    // -------------------------------------------------------
+
+    const handleVideoReady = () => {
+      requestParallaxUpdate();
+    };
+
+    video.addEventListener(
+      "loadedmetadata",
+      handleVideoReady
+    );
+
+    video.addEventListener(
+      "canplay",
+      handleVideoReady
+    );
+
+    // -------------------------------------------------------
+    // INITIAL POSITION
+    // -------------------------------------------------------
+
+    requestParallaxUpdate();
+
+    // -------------------------------------------------------
+    // CLEANUP
+    // -------------------------------------------------------
 
     return () => {
       window.removeEventListener(
@@ -1151,7 +1217,17 @@ useLayoutEffect(() => {
 
       window.removeEventListener(
         "resize",
-        handleResize
+        requestParallaxUpdate
+      );
+
+      video.removeEventListener(
+        "loadedmetadata",
+        handleVideoReady
+      );
+
+      video.removeEventListener(
+        "canplay",
+        handleVideoReady
       );
 
       if (raf) {
@@ -1171,7 +1247,9 @@ useLayoutEffect(() => {
     };
   }, hero);
 
-  return () => ctx.revert();
+  return () => {
+    ctx.revert();
+  };
 }, []);
 
   return (
