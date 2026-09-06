@@ -34,7 +34,7 @@ pnpm-workspace.yaml
 .local/
 .cache/
 artifacts/
-lib/
+/lib/
 scripts/
 *.tsbuildinfo
 
