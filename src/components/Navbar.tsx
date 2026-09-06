@@ -150,10 +150,9 @@ const Navbar = () => {
      🆕 MOBILE BOTTOM NAV — ACTIVE ITEM TRACKING
 
      Drives the traveling active dot + icon lift animation.
-     Route-backed items (Home / Shop / Profile) sync from the
+     Route-backed items (Home / Shop / B / Profile) sync from the
      URL automatically. Items with no route of their own
-     (the center "B" placeholder, and Cart which opens a
-     drawer rather than navigating) are set directly on tap.
+     (Cart opens a drawer rather than navigating) are set directly on tap.
      This block only affects the bottom mobile nav — nothing
      above it was touched.
   ========================================================= */
@@ -161,6 +160,7 @@ const Navbar = () => {
   const getActiveIdFromPath = (pathname: string) => {
     if (pathname === '/') return 'home';
     if (pathname === '/products') return 'shop';
+    if (pathname === '/agent') return 'b';
     if (pathname === '/profile' || pathname === '/auth') return 'profile';
     return null;
   };
@@ -189,7 +189,7 @@ const Navbar = () => {
   const mobileNavItems: MobileNavItem[] = [
     { id: 'home', kind: 'link', to: '/', icon: Home, label: 'Home' },
     { id: 'shop', kind: 'link', to: '/products', icon: Grid3X3, label: 'Shop' },
-    { id: 'b', kind: 'button', special: true, label: 'B' },
+    { id: 'b', kind: 'link', to: '/agent', special: true, label: 'B' },
     {
       id: 'cart',
       kind: 'button',
@@ -950,8 +950,7 @@ const Navbar = () => {
                 )}
 
                 {item.special ? (
-                  // Center "B" — premium placeholder, reuses the
-                  // existing gold accent. No functionality yet.
+                  // Center "B" — reuses the existing gold accent.
                   <span
   className={`
     relative

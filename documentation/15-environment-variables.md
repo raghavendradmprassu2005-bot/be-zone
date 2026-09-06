@@ -86,6 +86,18 @@ Set ONLY in Vercel Dashboard → Project → Settings → Environment Variables.
 
 > ⚠️ `SUPABASE_SERVICE_ROLE_KEY` can read and write anything in your database, bypassing all RLS policies. Keep it strictly server-side.
 
+### Be-Zone Agent (Supabase Edge Function)
+
+Set these only as Supabase Edge Function secrets. They must never use the `VITE_` prefix:
+
+| Variable | Purpose |
+|----------|---------|
+| `GEMINI_API_KEY` | Secret key for the Gemini Developer API |
+| `GEMINI_MODEL` | Optional Gemini model name; defaults to `gemini-2.0-flash` |
+
+The browser calls the `be-zone-agent` Edge Function through the existing Supabase client. The Gemini
+endpoint and `GEMINI_API_KEY` are never included in frontend code or frontend environment variables.
+
 ---
 
 ## Complete Variable Reference
@@ -108,6 +120,8 @@ Set ONLY in Vercel Dashboard → Project → Settings → Environment Variables.
 | `FIREBASE_PRIVATE_KEY` | Backend | For push | send-push-notification.js |
 | `SUPABASE_URL` | Backend | For push | send-push-notification.js |
 | `SUPABASE_SERVICE_ROLE_KEY` | Backend | For push | send-push-notification.js |
+| `GEMINI_API_KEY` | Supabase Edge Function | For B Agent | be-zone-agent |
+| `GEMINI_MODEL` | Supabase Edge Function | Optional B Agent model | be-zone-agent |
 
 ---
 
