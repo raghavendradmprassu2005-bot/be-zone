@@ -26,6 +26,7 @@ import NotFound from "./pages/NotFound";
 import { PWAInstallPrompt } from "@/components/PWAInstallPrompt";
 import { useFCMToken } from "@/hooks/useFCMToken";
 import ScrollToTop from "@/components/ScrollToTop";
+import VisualSearch from "./components/VisualSearch";
 
 const queryClient = new QueryClient();
 
@@ -76,6 +77,7 @@ const App = () => (
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/admin" element={<Admin />} />
                   <Route path="*" element={<NotFound />} />
+                  <Route path="/visual-search" element={<VisualSearch />} />
                 </Routes>
                 <Footer />
               </BrowserRouter>

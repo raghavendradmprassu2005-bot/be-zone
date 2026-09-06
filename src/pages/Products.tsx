@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useProducts } from '@/hooks/useProducts';
 import { CATEGORIES, Category } from '@/lib/types';
 import ProductCard from '@/components/ProductCard';
@@ -129,7 +129,32 @@ const Products = () => {
                   className="w-full"
                 />
               </div>
+
+              {/* Visual Search + Sort Controls */}
               <div className="flex w-full sm:w-auto items-center gap-3">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="h-10 shrink-0 border-border/50 bg-background text-sm"
+                >
+                  <Link to="/visual-search">
+                    <svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 24 24"
+  fill="none"
+  stroke="currentColor"
+  strokeWidth="1.8"
+  className="mr-2 h-4 w-4"
+  aria-hidden="true"
+>
+  <rect x="3" y="5" width="18" height="14" rx="3" />
+  <circle cx="12" cy="12" r="3.5" />
+  <path d="M8 5l1.2-2h5.6L16 5" />
+</svg>
+                    Visual Search
+                  </Link>
+                </Button>
+
                 <Select value={sortBy} onValueChange={setSortBy}>
                   <SelectTrigger className="flex-1 sm:w-40 h-10 border-border/50 bg-background text-sm">
                     <SelectValue />
@@ -141,6 +166,7 @@ const Products = () => {
                     <SelectItem value="rating">Top Rated</SelectItem>
                   </SelectContent>
                 </Select>
+
                 <Button variant="outline" size="icon" className="h-10 w-10 shrink-0 border-border/50 lg:hidden" onClick={() => setFiltersOpen(!filtersOpen)}>
                   <SlidersHorizontal className="h-4 w-4" />
                 </Button>

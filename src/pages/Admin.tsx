@@ -21,7 +21,8 @@ import { ProductFilters } from '@/components/admin/ProductFilters';
 import { ProductTable } from '@/components/admin/ProductTable';
 import { ProductEditor } from '@/components/admin/ProductEditor';
 import { sendPushNotification } from '@/lib/pushNotify';
-
+import { createImageEmbedding } from '@/lib/visualSearch';
+import { generateImageEmbedding } from '@/lib/visualEmbedding';
 import type { Database } from '@/integrations/supabase/types';
 import type { AdminProductForm } from '@/components/admin/types';
 
@@ -50,7 +51,10 @@ const emptyForm: AdminProductForm = {
   top_product: false,
 };
 
-type ProductRow = Database['public']['Tables']['products']['Row'];
+type ProductRow = Omit<
+  Database['public']['Tables']['products']['Row'],
+  'image_embedding'
+>;
 type OrderWithItems = Database['public']['Tables']['orders']['Row'] & {
   order_items?: Database['public']['Tables']['order_items']['Row'][];
 };
@@ -193,63 +197,115 @@ const Admin = () => {
   };
 
   const saveProduct = async () => {
-    let imageUrl = editingId
-      ? products.find((p) => p.id === editingId)?.image || ''
-      : '';
+  let imageUrl = editingId
+    ? products.find((p) => p.id === editingId)?.image || ''
+    : '';
 
-    const uploadFile = imageFiles[0];
+  let imageEmbedding: string | undefined;
 
-    if (uploadFile) {
-      const fileName = `${Date.now()}-${uploadFile.name}`;
-      const { error: uploadError } = await supabase.storage
-        .from('product-images')
-        .upload(fileName, uploadFile);
+  const uploadFile = imageFiles[0];
 
-      if (uploadError) {
-        toast({ title: 'Image upload failed', description: uploadError.message, variant: 'destructive' });
-        return;
-      }
+  if (uploadFile) {
+    const fileName = `${Date.now()}-${uploadFile.name}`;
 
-      imageUrl = supabase.storage.from('product-images').getPublicUrl(fileName).data.publicUrl;
+    const { error: uploadError } = await supabase.storage
+      .from('product-images')
+      .upload(fileName, uploadFile);
+
+    if (uploadError) {
+      toast({
+        title: 'Image upload failed',
+        description: uploadError.message,
+        variant: 'destructive',
+      });
+      return;
     }
 
-    // Build tags: user-typed tags (minus managed flags) + managed flags from toggles
-    const userTags = form.tags.split(',').map((t) => t.trim()).filter(t => t && t !== 'top-product');
-    if (form.top_product) userTags.push('top-product');
+    imageUrl = supabase.storage
+      .from('product-images')
+      .getPublicUrl(fileName)
+      .data.publicUrl;
 
-    const payload = {
-      name: form.name,
-      description: form.description,
-      price: parseInt(form.price, 10),
-      original_price: form.original_price ? parseInt(form.original_price, 10) : null,
-      category: form.category,
-      image: imageUrl,
-      tags: userTags,
-      zodiac_sign: form.zodiac_sign || null,
-      in_stock: form.in_stock,
-    };
+    // Generate the 512-dimensional visual-search embedding
+    // locally in the browser. This does not call a paid API.
+    try {
+      imageEmbedding = `[${(await createImageEmbedding(uploadFile)).join(',')}]`;
+    } catch (embeddingError) {
+      console.error('Visual search embedding failed:', embeddingError);
 
-    if (editingId) {
-      const { error } = await supabase.from('products').update(payload).eq('id', editingId);
-      if (error) {
-        toast({ title: 'Error', description: error.message, variant: 'destructive' });
-        return;
-      }
-      toast({ title: 'Product updated ✨' });
-    } else {
-      const { error } = await supabase.from('products').insert(payload);
-      if (error) {
-        toast({ title: 'Error', description: error.message, variant: 'destructive' });
-        return;
-      }
-      toast({ title: 'Product added ✨' });
+      toast({
+        title: 'Image uploaded',
+        description:
+          'Product saved, but visual search indexing failed for this image.',
+      });
+    }
+  }
+
+  // Build tags: user-typed tags (minus managed flags) + managed flags from toggles
+  const userTags = form.tags
+    .split(',')
+    .map((t) => t.trim())
+    .filter((t) => t && t !== 'top-product');
+
+  if (form.top_product) {
+    userTags.push('top-product');
+  }
+
+  const payload = {
+  name: form.name,
+  description: form.description,
+  price: parseInt(form.price, 10),
+  original_price: form.original_price
+    ? parseInt(form.original_price, 10)
+    : null,
+  category: form.category,
+  image: imageUrl,
+  tags: userTags,
+  zodiac_sign: form.zodiac_sign || null,
+  in_stock: form.in_stock,
+  ...(imageEmbedding !== undefined
+    ? { image_embedding: imageEmbedding }
+    : {}),
+};
+
+  if (editingId) {
+    const { error } = await supabase
+      .from('products')
+      .update(payload)
+      .eq('id', editingId);
+
+    if (error) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+      return;
     }
 
-    setDialogOpen(false);
-    setImageFiles([]);
-    setGalleryPreview(null);
-    fetchDashboardData();
-  };
+    toast({ title: 'Product updated ✨' });
+  } else {
+    const { error } = await supabase
+      .from('products')
+      .insert(payload);
+
+    if (error) {
+      toast({
+        title: 'Error',
+        description: error.message,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    toast({ title: 'Product added ✨' });
+  }
+
+  setDialogOpen(false);
+  setImageFiles([]);
+  setGalleryPreview(null);
+  fetchDashboardData();
+};
 
   const deleteProduct = async (id: string) => {
     if (!confirm('Delete this product?')) return;

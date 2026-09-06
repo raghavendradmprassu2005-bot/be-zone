@@ -10,6 +10,7 @@ import {
   Home,
   Grid3X3,
   ChevronDown,
+  type LucideIcon,
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useCart } from '@/context/CartContext';
@@ -143,6 +144,66 @@ const Navbar = () => {
   const navLinks = [
     { to: '/', label: 'Home' },
     { to: '/products', label: 'Shop' },
+  ];
+
+  /* =========================================================
+     🆕 MOBILE BOTTOM NAV — ACTIVE ITEM TRACKING
+
+     Drives the traveling active dot + icon lift animation.
+     Route-backed items (Home / Shop / Profile) sync from the
+     URL automatically. Items with no route of their own
+     (the center "B" placeholder, and Cart which opens a
+     drawer rather than navigating) are set directly on tap.
+     This block only affects the bottom mobile nav — nothing
+     above it was touched.
+  ========================================================= */
+
+  const getActiveIdFromPath = (pathname: string) => {
+    if (pathname === '/') return 'home';
+    if (pathname === '/products') return 'shop';
+    if (pathname === '/profile' || pathname === '/auth') return 'profile';
+    return null;
+  };
+
+  const [activeMobileId, setActiveMobileId] = useState(
+    () => getActiveIdFromPath(location.pathname) ?? 'home'
+  );
+
+  useEffect(() => {
+    const routeActive = getActiveIdFromPath(location.pathname);
+    if (routeActive) {
+      setActiveMobileId(routeActive);
+    }
+  }, [location.pathname]);
+
+  type MobileNavItem = {
+    id: 'home' | 'shop' | 'b' | 'cart' | 'profile';
+    kind: 'link' | 'button';
+    to?: string;
+    icon?: LucideIcon;
+    label: string;
+    special?: boolean;
+    onClick?: () => void;
+  };
+
+  const mobileNavItems: MobileNavItem[] = [
+    { id: 'home', kind: 'link', to: '/', icon: Home, label: 'Home' },
+    { id: 'shop', kind: 'link', to: '/products', icon: Grid3X3, label: 'Shop' },
+    { id: 'b', kind: 'button', special: true, label: 'B' },
+    {
+      id: 'cart',
+      kind: 'button',
+      icon: ShoppingCart,
+      label: 'Cart',
+      onClick: () => setIsCartOpen(true),
+    },
+    {
+      id: 'profile',
+      kind: 'link',
+      to: user ? '/profile' : '/auth',
+      icon: User,
+      label: user ? 'Profile' : 'Login',
+    },
   ];
 
   return (
@@ -838,132 +899,215 @@ const Navbar = () => {
       {/* =======================================================
           MOBILE BOTTOM NAVIGATION
 
-          🟢 COMPLETELY UNCHANGED
-          DO NOT MODIFY
+          🆕 UPDATED: Home — Shop — B — Cart — Profile
+          Wishlist removed. Traveling active dot (layoutId)
+          + spring-based icon lift on the selected item.
+          Existing routes/handlers for Home, Shop, Cart and
+          Profile are untouched — only the visuals + the
+          B placeholder are new. Admin pill preserved as-is.
       ======================================================= */}
 
-      <div className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/50 bg-background/95 backdrop-blur-lg md:hidden">
+      <div
+        className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/50 bg-background/95 backdrop-blur-lg md:hidden"
+        style={{
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+        }}
+      >
 
-        <div className="flex items-center justify-around py-2">
+        <div className="flex items-stretch justify-around py-2">
 
-          {/* Home */}
+          {mobileNavItems.map((item) => {
+            const isActive = activeMobileId === item.id;
+            const Icon = 'icon' in item ? item.icon : null;
 
-          <Link
-            to="/"
-            className={`flex flex-col items-center gap-0.5 px-3 py-1 ${
-              location.pathname === '/'
-                ? 'text-secondary'
-                : 'text-muted-foreground'
-            }`}
-          >
-            <Home className="h-5 w-5" />
-
-            <span className="text-[10px] font-medium">
-              Home
-            </span>
-          </Link>
-
-
-          {/* Shop */}
-
-          <Link
-            to="/products"
-            className={`flex flex-col items-center gap-0.5 px-3 py-1 ${
-              location.pathname === '/products'
-                ? 'text-secondary'
-                : 'text-muted-foreground'
-            }`}
-          >
-            <Grid3X3 className="h-5 w-5" />
-
-            <span className="text-[10px] font-medium">
-              Shop
-            </span>
-          </Link>
-
-
-          {/* Cart */}
-
-          <button
-            onClick={() =>
-              setIsCartOpen(true)
-            }
-            className="
-              relative
-              flex
-              flex-col
-              items-center
-              gap-0.5
-              px-3
-              py-1
-              text-muted-foreground
-            "
-          >
-            <ShoppingCart className="h-5 w-5" />
-
-            {totalItems > 0 && (
-              <span
-                className="
-                  absolute
-                  -top-0.5
-                  right-1
-                  flex
-                  h-4
-                  w-4
-                  items-center
-                  justify-center
-                  rounded-full
-                  bg-secondary
-                  text-[9px]
-                  font-bold
-                  text-secondary-foreground
-                "
+            const iconBlock = (
+              <motion.div
+                className="relative flex flex-col items-center gap-0.5 px-3 py-1"
+                animate={{
+                  y: isActive ? -3 : 0,
+                  scale: isActive ? 1.1 : 1,
+                }}
+                transition={{
+                  type: 'spring',
+                  stiffness: 380,
+                  damping: 22,
+                  mass: 0.6,
+                }}
+                whileTap={{ scale: isActive ? 1.04 : 0.94 }}
               >
-                {totalItems}
-              </span>
-            )}
+                {/* Traveling active dot — shared layoutId slides between items */}
+                {isActive && (
+                  <motion.span
+                    layoutId="mobileActiveDot"
+                    className="absolute -top-1.5 h-1.5 w-1.5 rounded-full bg-[#C4921A]"
+                    transition={{
+                      type: 'spring',
+                      stiffness: 420,
+                      damping: 32,
+                      mass: 0.5,
+                    }}
+                  />
+                )}
 
-            <span className="text-[10px] font-medium">
-              Cart
-            </span>
-          </button>
+                {item.special ? (
+                  // Center "B" — premium placeholder, reuses the
+                  // existing gold accent. No functionality yet.
+                  <span
+  className={`
+    relative
+    flex
+    h-8
+    w-8
+    items-center
+    justify-center
+    rounded-full
+    transition-all
+    duration-300
+    ${
+      isActive
+        ? 'bg-[#C4921A]/10'
+        : 'bg-[#C4921A]/5'
+    }
+  `}
+>
+  {/* Premium outer ring */}
+  <span
+    className={`
+      absolute
+      inset-0
+      rounded-full
+      border
+      transition-all
+      duration-300
+      ${
+        isActive
+          ? 'border-[#C4921A]'
+          : 'border-[#C4921A]/30'
+      }
+    `}
+  />
 
+  {/* Premium B mark */}
+  <span
+    className={`
+      relative
+      font-display
+      text-[17px]
+      font-bold
+      leading-none
+      tracking-[-0.08em]
+      transition-all
+      duration-300
+      ${
+        isActive
+          ? 'text-[#C4921A]'
+          : 'text-[#C4921A]/75'
+      }
+    `}
+  >
+    B
+  </span>
 
-          {/* Wishlist */}
+  {/* Small highlight */}
+  {isActive && (
+    <span
+      className="
+        pointer-events-none
+        absolute
+        inset-[2px]
+        rounded-full
+        border
+        border-[#E0B85A]/20
+      "
+    />
+  )}
+</span>
+                ) : (
+                  <span className="relative flex h-5 w-5 items-center justify-center">
+                    {Icon && (
+                      <Icon
+                        className={`h-5 w-5 transition-colors ${
+                          isActive ? 'text-[#C4921A]' : 'text-muted-foreground'
+                        }`}
+                      />
+                    )}
 
-          <Link
-            to="/wishlist"
-            className={`flex flex-col items-center gap-0.5 px-3 py-1 ${
-              location.pathname === '/wishlist'
-                ? 'text-secondary'
-                : 'text-muted-foreground'
-            }`}
-          >
-            <Heart className="h-5 w-5" />
+                    {item.id === 'cart' && totalItems > 0 && (
+                      <span
+                        className="
+                          absolute
+                          -top-1.5
+                          -right-2
+                          flex
+                          h-4
+                          w-4
+                          items-center
+                          justify-center
+                          rounded-full
+                          bg-secondary
+                          text-[9px]
+                          font-bold
+                          text-secondary-foreground
+                        "
+                      >
+                        {totalItems}
+                      </span>
+                    )}
+                  </span>
+                )}
 
-            <span className="text-[10px] font-medium">
-              Wishlist
-            </span>
-          </Link>
+                <span
+                  className={`text-[10px] font-medium transition-colors ${
+                    isActive ? 'text-[#C4921A]' : 'text-muted-foreground'
+                  }`}
+                >
+                  {item.label}
+                </span>
+              </motion.div>
+            );
 
+            if (item.kind === 'link') {
+              return (
+                <Link
+                  key={item.id}
+                  to={item.to ?? '/'}
+                  onClick={() => setActiveMobileId(item.id)}
+                  className="flex flex-1 items-center justify-center"
+                >
+                  {iconBlock}
+                </Link>
+              );
+            }
 
-          {/* Profile / Login */}
+            return (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setActiveMobileId(item.id);
+                  item.onClick?.();
+                }}
+                className="flex flex-1 items-center justify-center"
+              >
+                {iconBlock}
+              </button>
+            );
+          })}
 
-          <Link
-            to={user ? '/profile' : '/auth'}
-            className={`flex flex-col items-center gap-0.5 px-3 py-1 ${
-              location.pathname === '/profile' ||
-              location.pathname === '/auth'
-                ? 'text-secondary'
-                : 'text-muted-foreground'
-            }`}
-          >
-            <User className="h-5 w-5" />
-
-            <span className="text-[10px] font-medium">
-              {user ? 'Profile' : 'Login'}
-            </span>
-          </Link>
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className="
+                rounded-lg
+                px-3
+                py-2.5
+                text-sm
+                font-medium
+                text-secondary
+              "
+            >
+              Admin Panel
+            </Link>
+          )}
 
         </div>
 
